@@ -1,0 +1,889 @@
+<!DOCTYPE html><html lang="zh"><head><meta name="x-poe-datastore-behavior" content="local_only"><meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>麦洛淇 MYGELATO · 精致冰淇淋</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #8B1A4A;
+            --secondary: #C8476C;
+            --gold: #C9A96E;
+            --cream: #FDF6EC;
+            --dark: #1A1A1A;
+        }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Georgia', serif; color: #333; overflow-x: hidden; }
+
+        /* PROGRESS BAR */
+        #progressBar { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, var(--primary), var(--gold)); z-index: 9999; transition: width 0.1s; }
+
+        /* NAV */
+        nav {
+            position: fixed; top: 0; width: 100%; z-index: 1000;
+            background: rgba(255,255,255,0.96); backdrop-filter: blur(12px);
+            padding: 12px 40px; display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08); transition: all 0.3s;
+        }
+        .logo { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .logo-text { font-size: 26px; font-weight: bold; color: var(--primary); letter-spacing: 3px; }
+        .logo-sub { font-size: 10px; color: var(--gold); letter-spacing: 4px; }
+        .nav-links { display: flex; list-style: none; gap: 35px; align-items: center; }
+        .nav-links a {
+            text-decoration: none; color: var(--dark); font-size: 13px; letter-spacing: 1px;
+            transition: color 0.3s; position: relative; padding-bottom: 3px;
+        }
+        .nav-links a::after {
+            content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 1px;
+            background: var(--primary); transition: width 0.3s;
+        }
+        .nav-links a:hover { color: var(--primary); }
+        .nav-links a:hover::after { width: 100%; }
+        .lang-btn {
+            background: var(--primary); color: white; border: none;
+            padding: 8px 20px; border-radius: 25px; cursor: pointer;
+            font-size: 12px; letter-spacing: 2px; transition: all 0.3s;
+        }
+        .lang-btn:hover { background: var(--secondary); transform: scale(1.05); }
+        .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+        .hamburger span { width: 24px; height: 2px; background: var(--dark); transition: 0.3s; display: block; }
+        .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+        .hamburger.open span:nth-child(2) { opacity: 0; }
+        .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+        /* HERO */
+        .hero {
+            height: 100vh; min-height: 600px;
+            background: linear-gradient(140deg, #6B0F36 0%, #8B1A4A 25%, #C8476C 55%, #E8977C 80%, #FDF6EC 100%);
+            display: flex; align-items: center; justify-content: center;
+            position: relative; overflow: hidden;
+        }
+        .hero-bg-circle1 {
+            position: absolute; width: 700px; height: 700px; border-radius: 50%;
+            background: rgba(255,255,255,0.04); top: -200px; right: -150px;
+        }
+        .hero-bg-circle2 {
+            position: absolute; width: 500px; height: 500px; border-radius: 50%;
+            background: rgba(255,255,255,0.04); bottom: -150px; left: -100px;
+        }
+        .hero-content { text-align: center; color: white; z-index: 2; padding: 20px; }
+        .hero-badge {
+            display: inline-block; border: 1px solid rgba(255,255,255,0.4);
+            padding: 7px 22px; border-radius: 20px; font-size: 11px;
+            letter-spacing: 5px; text-transform: uppercase; margin-bottom: 30px;
+            backdrop-filter: blur(5px);
+        }
+        .hero h1 { font-size: 84px; font-weight: 300; letter-spacing: 10px; margin-bottom: 8px; }
+        .hero-en { font-size: 16px; letter-spacing: 8px; opacity: 0.75; margin-bottom: 28px; text-transform: uppercase; }
+        .hero-tagline { font-size: 18px; font-weight: 300; letter-spacing: 2px; opacity: 0.9; margin-bottom: 50px; }
+        .hero-btns { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+        .btn-white {
+            background: white; color: var(--primary); border: none;
+            padding: 15px 40px; border-radius: 30px; font-size: 13px;
+            letter-spacing: 2px; cursor: pointer; transition: all 0.3s;
+            text-decoration: none; display: inline-block; font-family: inherit;
+        }
+        .btn-white:hover { transform: translateY(-3px); box-shadow: 0 12px 35px rgba(0,0,0,0.25); }
+        .btn-ghost {
+            background: transparent; color: white; border: 1px solid rgba(255,255,255,0.6);
+            padding: 15px 40px; border-radius: 30px; font-size: 13px;
+            letter-spacing: 2px; cursor: pointer; transition: all 0.3s;
+            text-decoration: none; display: inline-block; font-family: inherit;
+        }
+        .btn-ghost:hover { background: rgba(255,255,255,0.15); transform: translateY(-3px); }
+        .hero-float {
+            position: absolute; animation: floatAnim 6s ease-in-out infinite; opacity: 0.18;
+        }
+        @keyframes floatAnim {
+            0%,100% { transform: translateY(0); }
+            50% { transform: translateY(-18px); }
+        }
+        .scroll-hint {
+            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+            color: rgba(255,255,255,0.6); font-size: 11px; letter-spacing: 3px;
+            display: flex; flex-direction: column; align-items: center; gap: 8px;
+        }
+        .scroll-hint-line {
+            width: 1px; height: 40px; background: rgba(255,255,255,0.4);
+            animation: scrollLine 2s ease-in-out infinite;
+        }
+        @keyframes scrollLine { 0%,100%{height:40px;opacity:1} 50%{height:20px;opacity:0.4} }
+
+        /* SECTION COMMON */
+        .section { padding: 100px 40px; }
+        .section-header { text-align: center; margin-bottom: 70px; }
+        .section-badge { display: block; color: var(--gold); font-size: 11px; letter-spacing: 5px; text-transform: uppercase; margin-bottom: 15px; }
+        .section-title { font-size: 42px; font-weight: 300; color: var(--dark); letter-spacing: 3px; margin-bottom: 20px; }
+        .section-divider { width: 60px; height: 2px; background: linear-gradient(90deg, var(--primary), var(--gold)); margin: 0 auto 22px; }
+        .section-desc { color: #777; font-size: 16px; line-height: 1.9; max-width: 580px; margin: 0 auto; }
+
+        /* FADE IN */
+        .fade-in { opacity: 0; transform: translateY(28px); transition: opacity 0.65s ease, transform 0.65s ease; }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+        /* PRODUCTS */
+        #products { background: var(--cream); }
+        .products-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 28px; max-width: 1200px; margin: 0 auto;
+        }
+        .product-card {
+            background: white; border-radius: 20px; overflow: hidden;
+            transition: all 0.4s; cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        }
+        .product-card:hover { transform: translateY(-10px); box-shadow: 0 20px 50px rgba(139,26,74,0.15); }
+        .product-img {
+            height: 230px; display: flex; align-items: flex-end;
+            justify-content: center; padding-bottom: 10px; position: relative; overflow: hidden;
+        }
+        .ice-wrap { display: flex; flex-direction: column; align-items: center; }
+        .scoop {
+            width: 110px; height: 110px; border-radius: 50% 50% 48% 48%;
+            box-shadow: inset -8px -8px 18px rgba(0,0,0,0.12), 3px 3px 12px rgba(0,0,0,0.12);
+            position: relative; z-index: 2;
+        }
+        .scoop::after {
+            content: ''; position: absolute; top: 15px; left: 20px;
+            width: 28px; height: 22px; border-radius: 50%;
+            background: rgba(255,255,255,0.22);
+        }
+        .cone-wrap {
+            width: 88px; height: 88px; margin-top: -6px; position: relative; z-index: 1;
+            overflow: hidden;
+        }
+        .cone-svg { width: 100%; height: 100%; }
+        .product-info { padding: 24px 26px; }
+        .product-name { font-size: 20px; color: var(--dark); letter-spacing: 1px; margin-bottom: 8px; }
+        .product-desc { font-size: 14px; color: #888; line-height: 1.7; margin-bottom: 14px; }
+        .product-price { font-size: 22px; color: var(--primary); font-weight: bold; }
+        .product-label {
+            display: inline-block; font-size: 11px; color: var(--gold); letter-spacing: 2px;
+            border: 1px solid var(--gold); padding: 3px 10px; border-radius: 10px; margin-bottom: 10px;
+        }
+
+        /* STORY */
+        #story { background: white; }
+        .story-wrap {
+            display: flex; align-items: center; gap: 80px;
+            max-width: 1200px; margin: 0 auto;
+        }
+        .story-visual {
+            flex: 1; min-height: 480px; border-radius: 24px;
+            background: linear-gradient(145deg, #6B0F36, #8B1A4A, #C8476C, #E8977C);
+            display: flex; align-items: center; justify-content: center;
+            position: relative; overflow: hidden;
+        }
+        .story-visual::before {
+            content: ''; position: absolute; inset: 0;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.08), transparent 60%);
+        }
+        .story-text { flex: 1; }
+        .story-text h2 { font-size: 38px; font-weight: 300; color: var(--dark); letter-spacing: 3px; margin-bottom: 28px; line-height: 1.5; }
+        .story-text p { font-size: 16px; color: #666; line-height: 2; margin-bottom: 20px; }
+        .story-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; margin-top: 38px; }
+        .stat-box { text-align: center; padding: 20px 10px; border: 1px solid #eee; border-radius: 14px; }
+        .stat-num { font-size: 30px; color: var(--primary); font-weight: bold; display: block; }
+        .stat-lab { font-size: 11px; color: #999; letter-spacing: 2px; display: block; margin-top: 5px; }
+
+        /* FLAVORS */
+        #flavors { background: #1C1C1C; }
+        #flavors .section-title { color: white; }
+        #flavors .section-desc { color: #aaa; }
+        .flavors-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 18px; max-width: 1200px; margin: 0 auto;
+        }
+        .flavor-card {
+            text-align: center; padding: 30px 18px;
+            border: 1px solid rgba(255,255,255,0.08); border-radius: 16px;
+            transition: all 0.35s; cursor: default; color: white;
+        }
+        .flavor-card:hover { border-color: var(--gold); background: rgba(255,255,255,0.04); transform: scale(1.05); }
+        .flavor-ball {
+            width: 72px; height: 72px; border-radius: 50%;
+            margin: 0 auto 18px; box-shadow: 0 5px 18px rgba(0,0,0,0.35);
+        }
+        .flavor-name { font-size: 15px; letter-spacing: 1px; margin-bottom: 5px; }
+        .flavor-sub { font-size: 11px; color: #666; letter-spacing: 2px; }
+
+        /* CONTACT */
+        #contact { background: var(--cream); }
+        .contact-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 60px; max-width: 1160px; margin: 0 auto;
+        }
+        .contact-info h3 {
+            font-size: 22px; font-weight: 400; color: var(--dark);
+            letter-spacing: 1px; margin-bottom: 30px;
+        }
+        .info-row { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 24px; }
+        .info-ico {
+            width: 42px; height: 42px; background: var(--primary); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 17px; flex-shrink: 0;
+        }
+        .info-body h4 { font-size: 11px; letter-spacing: 3px; color: var(--gold); margin-bottom: 5px; text-transform: uppercase; }
+        .info-body p { font-size: 14px; color: #555; line-height: 1.7; }
+        .info-body a { color: #555; text-decoration: none; transition: color 0.3s; }
+        .info-body a:hover { color: var(--primary); }
+        .map-placeholder {
+            width: 100%; height: 180px; border-radius: 14px; overflow: hidden;
+            margin-top: 10px; background: #e4e4e4;
+        }
+        .contact-form {
+            background: white; padding: 40px; border-radius: 20px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.06);
+        }
+        .contact-form h3 { font-size: 20px; color: var(--dark); letter-spacing: 2px; margin-bottom: 28px; }
+        .form-row { margin-bottom: 18px; }
+        .form-row label { display: block; font-size: 11px; letter-spacing: 2px; color: #aaa; margin-bottom: 7px; text-transform: uppercase; }
+        .form-row input, .form-row select, .form-row textarea {
+            width: 100%; padding: 12px 14px; border: 1px solid #e8e8e8;
+            border-radius: 9px; font-size: 14px; font-family: inherit;
+            transition: border-color 0.3s; outline: none; background: #fafafa; color: #333;
+        }
+        .form-row input:focus, .form-row select:focus, .form-row textarea:focus {
+            border-color: var(--primary); background: white;
+        }
+        .form-row textarea { height: 110px; resize: vertical; }
+        .btn-submit {
+            width: 100%; background: linear-gradient(135deg, var(--primary), #C8476C);
+            color: white; border: none; padding: 15px; border-radius: 30px;
+            font-size: 13px; letter-spacing: 3px; cursor: pointer;
+            transition: all 0.3s; font-family: inherit; margin-top: 6px;
+        }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(139,26,74,0.3); }
+
+        /* FOOTER */
+        footer { background: #141414; color: #777; padding: 70px 40px 30px; }
+        .footer-grid {
+            display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 50px; max-width: 1200px; margin: 0 auto 50px;
+        }
+        .footer-brand h3 { font-size: 28px; color: white; letter-spacing: 4px; margin-bottom: 12px; }
+        .footer-brand p { font-size: 13px; line-height: 2; color: #555; }
+        .footer-col h4 { color: #bbb; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 20px; }
+        .footer-col ul { list-style: none; }
+        .footer-col li { margin-bottom: 10px; }
+        .footer-col a { color: #555; text-decoration: none; font-size: 13px; transition: color 0.3s; cursor: pointer; }
+        .footer-col a:hover { color: var(--gold); }
+        .footer-bottom {
+            max-width: 1200px; margin: 0 auto;
+            display: flex; justify-content: space-between; align-items: center;
+            padding-top: 28px; border-top: 1px solid #242424; flex-wrap: wrap; gap: 12px;
+        }
+        .footer-bottom p { font-size: 12px; color: #444; }
+        .footer-bottom a { color: #444; text-decoration: none; transition: color 0.3s; }
+        .footer-bottom a:hover { color: var(--gold); }
+
+        /* MODAL */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.72); z-index: 5000;
+            align-items: center; justify-content: center; padding: 20px;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal-box {
+            background: white; border-radius: 22px; padding: 44px;
+            max-width: 480px; width: 100%; position: relative;
+            animation: modalPop 0.3s cubic-bezier(.34,1.56,.64,1);
+            max-height: 90vh; overflow-y: auto;
+        }
+        @keyframes modalPop { from{transform:scale(0.75);opacity:0} to{transform:scale(1);opacity:1} }
+        .modal-close {
+            position: absolute; top: 16px; right: 18px;
+            background: none; border: none; font-size: 26px;
+            cursor: pointer; color: #bbb; line-height: 1;
+            transition: color 0.2s;
+        }
+        .modal-close:hover { color: var(--primary); }
+        .modal-box h3 { font-size: 22px; color: var(--primary); margin-bottom: 16px; letter-spacing: 1px; }
+        .modal-box p { color: #555; line-height: 2; font-size: 15px; }
+        .modal-box .modal-price { font-size: 26px; color: var(--primary); font-weight: bold; margin: 12px 0; }
+        .modal-buy {
+            width: 100%; background: linear-gradient(135deg, var(--primary), #C8476C);
+            color: white; border: none; padding: 14px; border-radius: 28px;
+            font-size: 13px; letter-spacing: 3px; cursor: pointer;
+            margin-top: 22px; font-family: inherit; transition: all 0.3s;
+        }
+        .modal-buy:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(139,26,74,0.35); }
+
+        /* NOTIFICATION */
+        .notif {
+            position: fixed; bottom: 30px; right: 30px;
+            background: var(--primary); color: white;
+            padding: 14px 24px; border-radius: 12px; font-size: 14px;
+            z-index: 9000; opacity: 0; transform: translateY(16px);
+            transition: all 0.35s; pointer-events: none; max-width: 300px;
+        }
+        .notif.show { opacity: 1; transform: translateY(0); }
+
+        /* RESPONSIVE */
+        @media(max-width:900px){
+            .story-wrap { flex-direction: column; gap: 50px; }
+            .story-visual { min-height: 320px; width: 100%; }
+            .contact-grid { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+        }
+        @media(max-width:700px){
+            nav { padding: 12px 20px; }
+            .nav-links {
+                display: none; position: fixed; top: 64px; left: 0; width: 100%;
+                background: rgba(255,255,255,0.98); padding: 20px 24px;
+                flex-direction: column; gap: 18px;
+                box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            }
+            .nav-links.open { display: flex; }
+            .hamburger { display: flex; }
+            .hero h1 { font-size: 50px; }
+            .section-title { font-size: 30px; }
+            .section { padding: 70px 20px; }
+            .story-stats { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr; }
+            .modal-box { padding: 30px 24px; }
+        }
+        @media(max-width:430px){
+            .hero h1 { font-size: 38px; }
+            .hero-tagline { font-size: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="progressBar"></div>
+
+<!-- NAVIGATION -->
+<nav id="navbar">
+    <a href="#home" class="logo" style="text-decoration:none;">
+        <svg width="46" height="46" viewBox="0 0 46 46" fill="none">
+            <ellipse cx="23" cy="17" rx="18" ry="17" fill="#8B1A4A"></ellipse>
+            <ellipse cx="23" cy="18" rx="18" ry="17" fill="#C8476C"></ellipse>
+            <polygon points="8,26 38,26 23,44" fill="#D4A27A"></polygon>
+            <line x1="8" y1="26" x2="23" y2="44" stroke="rgba(0,0,0,0.08)" stroke-width="1"></line>
+            <line x1="38" y1="26" x2="23" y2="44" stroke="rgba(0,0,0,0.08)" stroke-width="1"></line>
+            <ellipse cx="16" cy="13" rx="5" ry="4" fill="rgba(255,255,255,0.2)"></ellipse>
+        </svg>
+        <div>
+            <div class="logo-text" data-zh="麦洛淇" data-en="MYGELATO">麦洛淇</div>
+            <div class="logo-sub" data-zh="精致冰淇淋" data-en="PREMIUM GELATO">精致冰淇淋</div>
+        </div>
+    </a>
+
+    <div class="hamburger" id="hbg" onclick="toggleMenu()">
+        <span></span><span></span><span></span>
+    </div>
+
+    <ul class="nav-links" id="navLinks">
+        <li><a href="#products" onclick="closeMenu()" data-zh="产品系列" data-en="PRODUCTS">产品系列</a></li>
+        <li><a href="#story" onclick="closeMenu()" data-zh="品牌故事" data-en="OUR STORY">品牌故事</a></li>
+        <li><a href="#flavors" onclick="closeMenu()" data-zh="口味探索" data-en="FLAVORS">口味探索</a></li>
+        <li><a href="#contact" onclick="closeMenu()" data-zh="联系我们" data-en="CONTACT">联系我们</a></li>
+        <li><button class="lang-btn" id="langBtn" onclick="toggleLang()">EN</button></li>
+    </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+    <div class="hero-bg-circle1"></div>
+    <div class="hero-bg-circle2"></div>
+
+    <svg class="hero-float" style="top:12%;left:6%;animation-delay:0s;" width="55" height="75" viewBox="0 0 55 75">
+        <ellipse cx="27" cy="25" rx="25" ry="25" fill="white"></ellipse>
+        <polygon points="4,25 50,25 27,72" fill="rgba(255,255,255,0.85)"></polygon>
+    </svg>
+    <svg class="hero-float" style="top:18%;right:7%;animation-delay:1.5s;" width="42" height="58" viewBox="0 0 42 58">
+        <ellipse cx="21" cy="19" rx="19" ry="19" fill="white"></ellipse>
+        <polygon points="3,19 39,19 21,55" fill="rgba(255,255,255,0.85)"></polygon>
+    </svg>
+    <svg class="hero-float" style="bottom:18%;left:12%;animation-delay:3s;opacity:0.12;" width="35" height="48" viewBox="0 0 35 48">
+        <ellipse cx="17" cy="16" rx="16" ry="16" fill="white"></ellipse>
+        <polygon points="2,16 32,16 17,46" fill="rgba(255,255,255,0.85)"></polygon>
+    </svg>
+
+    <div class="hero-content">
+        <div class="hero-badge" data-zh="北京 · 精致冰淇淋品牌" data-en="BEIJING · PREMIUM GELATO BRAND">北京 · 精致冰淇淋品牌</div>
+        <h1 data-zh="麦洛淇" data-en="MYGELATO">麦洛淇</h1>
+        <div class="hero-en" data-zh="MY GELATO · 意式冰淇淋" data-en="麦洛淇 · 意式冰淇淋">MY GELATO · 意式冰淇淋</div>
+        <div class="hero-tagline" data-zh="每一勺，都是一次甜蜜的旅行" data-en="Every Scoop — A Sweet Journey">每一勺，都是一次甜蜜的旅行</div>
+        <div class="hero-btns">
+            <a href="#products" class="btn-white" data-zh="探索产品" data-en="Explore Products">探索产品</a>
+            <a href="#story" class="btn-ghost" data-zh="品牌故事" data-en="Our Story">品牌故事</a>
+        </div>
+    </div>
+    <div class="scroll-hint">
+        <div class="scroll-hint-line"></div>
+    </div>
+</section>
+
+<!-- PRODUCTS -->
+<section id="products" class="section">
+    <div class="section-header fade-in">
+        <span class="section-badge" data-zh="SIGNATURE PRODUCTS" data-en="SIGNATURE PRODUCTS">SIGNATURE PRODUCTS</span>
+        <h2 class="section-title" data-zh="明星产品" data-en="Premium Collection">明星产品</h2>
+        <div class="section-divider"></div>
+        <p class="section-desc" data-zh="精选全球优质原料，融合意式传统工艺与现代创新，每一款都是味觉与艺术的双重享受。" data-en="Premium global ingredients meet Italian craftsmanship — each creation is a celebration of taste and artistry.">精选全球优质原料，融合意式传统工艺与现代创新，每一款都是味觉与艺术的双重享受。</p>
+    </div>
+    <div class="products-grid" id="productsGrid"></div>
+</section>
+
+<!-- STORY -->
+<section id="story" class="section">
+    <div class="story-wrap">
+        <div class="story-visual fade-in">
+            <div style="text-align:center;color:white;z-index:2;padding:40px;">
+                <svg width="160" height="215" viewBox="0 0 160 215">
+                    <defs>
+                        <radialGradient id="s1" cx="40%" cy="35%">
+                            <stop offset="0%" stop-color="#FFB5C8"></stop>
+                            <stop offset="100%" stop-color="#E8476C"></stop>
+                        </radialGradient>
+                        <radialGradient id="s2" cx="40%" cy="35%">
+                            <stop offset="0%" stop-color="#D46080"></stop>
+                            <stop offset="100%" stop-color="#9B1A4A"></stop>
+                        </radialGradient>
+                        <radialGradient id="s3" cx="40%" cy="35%">
+                            <stop offset="0%" stop-color="#B84068"></stop>
+                            <stop offset="100%" stop-color="#6B0F36"></stop>
+                        </radialGradient>
+                    </defs>
+                    <ellipse cx="80" cy="58" rx="40" ry="38" fill="url(#s1)"></ellipse>
+                    <ellipse cx="80" cy="95" rx="46" ry="42" fill="url(#s2)"></ellipse>
+                    <ellipse cx="80" cy="133" rx="50" ry="44" fill="url(#s3)"></ellipse>
+                    <polygon points="30,140 130,140 80,212" fill="#D4A27A"></polygon>
+                    <line x1="30" y1="140" x2="80" y2="212" stroke="rgba(0,0,0,0.1)" stroke-width="0.8"></line>
+                    <line x1="130" y1="140" x2="80" y2="212" stroke="rgba(0,0,0,0.1)" stroke-width="0.8"></line>
+                    <ellipse cx="66" cy="50" rx="12" ry="9" fill="rgba(255,255,255,0.25)"></ellipse>
+                    <ellipse cx="66" cy="87" rx="12" ry="9" fill="rgba(255,255,255,0.18)"></ellipse>
+                </svg>
+                <div style="font-size:30px;letter-spacing:6px;margin-bottom:6px;">麦洛淇</div>
+                <div style="font-size:12px;letter-spacing:5px;opacity:0.65;">SINCE 2020 · BEIJING</div>
+            </div>
+        </div>
+        <div class="story-text fade-in">
+            <span class="section-badge" style="text-align:left;" data-zh="OUR STORY · 品牌故事" data-en="OUR STORY · 品牌故事">OUR STORY · 品牌故事</span>
+            <h2 data-zh="源于热爱&lt;br&gt;成于匠心" data-en="Born from Passion&lt;br&gt;Crafted with Care">源于热爱<br>成于匠心</h2>
+            <p data-zh="麦洛淇诞生于北京，由一群对美食充满热情的创业者共同创立。我们深信，最好的冰淇淋不仅仅是一种甜品——它是一种情感的表达，是对生活美好的追求。" data-en="Mygelato was born in Beijing, founded by a passionate team of food enthusiasts. We believe that great gelato is more than dessert — it's an expression of emotion, and a pursuit of life's finest moments.">麦洛淇诞生于北京，由一群对美食充满热情的创业者共同创立。我们深信，最好的冰淇淋不仅仅是一种甜品——它是一种情感的表达，是对生活美好的追求。</p>
+            <p data-zh="我们从全球精选最优质的原料，融合传统意式工艺与现代创新，打造出属于中国消费者的精致冰淇淋体验。每一款产品都经过严格品质把控，只为给您带来最完美的味觉享受。" data-en="We source the world's finest ingredients and combine traditional Italian gelato craftsmanship with modern innovation — creating a premium gelato experience for Chinese consumers. Every product undergoes rigorous quality control for the perfect sensory experience.">我们从全球精选最优质的原料，融合传统意式工艺与现代创新，打造出属于中国消费者的精致冰淇淋体验。每一款产品都经过严格品质把控，只为给您带来最完美的味觉享受。</p>
+            <div class="story-stats">
+                <div class="stat-box">
+                    <span class="stat-num">30+</span>
+                    <span class="stat-lab" data-zh="精品口味" data-en="FLAVORS">精品口味</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-num">100%</span>
+                    <span class="stat-lab" data-zh="天然原料" data-en="NATURAL">天然原料</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-num">5★</span>
+                    <span class="stat-lab" data-zh="品质保证" data-en="QUALITY">品质保证</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FLAVORS -->
+<section id="flavors" class="section">
+    <div class="section-header fade-in">
+        <span class="section-badge" data-zh="FLAVOR COLLECTION · 口味系列" data-en="FLAVOR COLLECTION · 口味系列">FLAVOR COLLECTION · 口味系列</span>
+        <h2 class="section-title" data-zh="探索每一种滋味" data-en="Discover Every Flavor">探索每一种滋味</h2>
+        <div class="section-divider"></div>
+        <p class="section-desc" data-zh="从经典传统到大胆创新，我们的每一种口味都是一场精彩的味觉冒险。" data-en="From timeless classics to bold innovations — every flavor is an adventure for your taste buds.">从经典传统到大胆创新，我们的每一种口味都是一场精彩的味觉冒险。</p>
+    </div>
+    <div class="flavors-grid" id="flavorsGrid"></div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="section">
+    <div class="section-header fade-in">
+        <span class="section-badge" data-zh="CONTACT US · 联系我们" data-en="CONTACT US · 联系我们">CONTACT US · 联系我们</span>
+        <h2 class="section-title" data-zh="与我们相连" data-en="Get In Touch">与我们相连</h2>
+        <div class="section-divider"></div>
+    </div>
+    <div class="contact-grid">
+        <div class="contact-info fade-in">
+            <h3 data-zh="北京麦洛淇食品科技有限公司" data-en="Beijing Mygelato Food Technology Co., Ltd.">北京麦洛淇食品科技有限公司</h3>
+            <div class="info-row">
+                <div class="info-ico">📍</div>
+                <div class="info-body">
+                    <h4 data-zh="公司地址" data-en="ADDRESS">公司地址</h4>
+                    <p data-zh="北京市丰台区西二环菜户营桥北58号&lt;br&gt;财富西环大厦26层" data-en="26F, Fortune West Ring Tower&lt;br&gt;No.58, North of Caihuyingqiao&lt;br&gt;West 2nd Ring Road, Fengtai District, Beijing">北京市丰台区西二环菜户营桥北58号<br>财富西环大厦26层</p>
+                </div>
+            </div>
+            <div class="info-row">
+                <div class="info-ico">📞</div>
+                <div class="info-body">
+                    <h4 data-zh="联系电话" data-en="PHONE">联系电话</h4>
+                    <p>杨 &nbsp;<a href="tel:17812098632">178-1209-8632</a></p>
+                    <p>王 &nbsp;<a href="tel:13716217716">137-1621-7716</a></p>
+                </div>
+            </div>
+            <div class="info-row">
+                <div class="info-ico">🌐</div>
+                <div class="info-body">
+                    <h4 data-zh="官方网站" data-en="WEBSITE">官方网站</h4>
+                    <p><a href="http://www.mygelato.cn" target="_blank" style="color:var(--primary)!important;">www.mygelato.cn</a></p>
+                </div>
+            </div>
+            <div class="info-row">
+                <div class="info-ico">🕐</div>
+                <div class="info-body">
+                    <h4 data-zh="营业时间" data-en="HOURS">营业时间</h4>
+                    <p data-zh="周一至周日 &nbsp;10:00 – 22:00" data-en="Mon – Sun &nbsp;10:00 – 22:00">周一至周日 &nbsp;10:00 – 22:00</p>
+                </div>
+            </div>
+            <div class="map-placeholder">
+                <svg width="100%" height="100%" viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="400" height="180" fill="#ebebeb"></rect>
+                    <rect x="0" y="80" width="400" height="8" fill="#ddd"></rect>
+                    <rect x="185" y="0" width="8" height="180" fill="#ddd"></rect>
+                    <rect x="70" y="45" width="90" height="38" rx="6" fill="#d8d8d8"></rect>
+                    <rect x="210" y="70" width="110" height="28" rx="6" fill="#d8d8d8"></rect>
+                    <rect x="100" y="100" width="70" height="32" rx="6" fill="#d8d8d8"></rect>
+                    <rect x="250" y="108" width="80" height="25" rx="6" fill="#d8d8d8"></rect>
+                    <circle cx="196" cy="88" r="14" fill="#8B1A4A" opacity="0.9"></circle>
+                    <circle cx="196" cy="88" r="6" fill="white"></circle>
+                    <circle cx="196" cy="88" r="28" fill="#8B1A4A" opacity="0.12"></circle>
+                    <text x="196" y="120" text-anchor="middle" font-size="10" fill="#777" font-family="sans-serif">财富西环大厦</text>
+                    <text x="196" y="133" text-anchor="middle" font-size="9" fill="#aaa" font-family="sans-serif">Fortune West Ring Tower</text>
+                </svg>
+            </div>
+        </div>
+        <div class="contact-form fade-in">
+            <h3 data-zh="发送留言" data-en="Send a Message">发送留言</h3>
+            <div class="form-row">
+                <label data-zh="您的姓名" data-en="YOUR NAME">您的姓名</label>
+                <input type="text" id="fName" data-placeholder-zh="请输入您的姓名" data-placeholder-en="Enter your name" placeholder="请输入您的姓名">
+            </div>
+            <div class="form-row">
+                <label data-zh="联系电话" data-en="PHONE NUMBER">联系电话</label>
+                <input type="tel" id="fPhone" data-placeholder-zh="请输入您的联系电话" data-placeholder-en="Enter your phone number" placeholder="请输入您的联系电话">
+            </div>
+            <div class="form-row">
+                <label data-zh="咨询类型" data-en="INQUIRY TYPE">咨询类型</label>
+                <select id="fType">
+                    <option data-zh="产品咨询" data-en="Product Inquiry">产品咨询</option>
+                    <option data-zh="合作洽谈" data-en="Business Partnership">合作洽谈</option>
+                    <option data-zh="订购服务" data-en="Order Service">订购服务</option>
+                    <option data-zh="礼品定制" data-en="Gift Customization">礼品定制</option>
+                    <option data-zh="其他问题" data-en="Other Inquiries">其他问题</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label data-zh="留言内容" data-en="MESSAGE">留言内容</label>
+                <textarea id="fMsg" data-placeholder-zh="请输入您的留言内容..." data-placeholder-en="Enter your message..." placeholder="请输入您的留言内容..."></textarea>
+            </div>
+            <button class="btn-submit" onclick="submitForm()" data-zh="提交留言" data-en="Send Message">提交留言</button>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <div class="footer-grid">
+        <div class="footer-brand">
+            <h3>麦洛淇</h3>
+            <p data-zh="MYGELATO · 意式精致冰淇淋" data-en="MYGELATO · Premium Italian Gelato">MYGELATO · 意式精致冰淇淋</p>
+            <p style="margin-top:14px;" data-zh="北京麦洛淇食品科技有限公司&lt;br&gt;www.mygelato.cn" data-en="Beijing Mygelato Food Technology Co., Ltd.&lt;br&gt;www.mygelato.cn">北京麦洛淇食品科技有限公司<br>www.mygelato.cn</p>
+            <p style="margin-top:14px;" data-zh="我们致力于为每位消费者带来最精致、最纯正的冰淇淋体验，让每一口都成为难忘的甜蜜记忆。" data-en="We are dedicated to delivering the finest, most authentic gelato experience — making every bite an unforgettable sweet memory.">我们致力于为每位消费者带来最精致、最纯正的冰淇淋体验，让每一口都成为难忘的甜蜜记忆。</p>
+        </div>
+        <div class="footer-col">
+            <h4 data-zh="产品" data-en="PRODUCTS">产品</h4>
+            <ul>
+                <li><a href="#products" data-zh="经典系列" data-en="Classic Collection">经典系列</a></li>
+                <li><a href="#products" data-zh="季节限定" data-en="Seasonal Specials">季节限定</a></li>
+                <li><a onclick="openInfoModal('gift')" data-zh="礼品定制" data-en="Gift Customization">礼品定制</a></li>
+                <li><a href="#flavors" data-zh="全部口味" data-en="All Flavors">全部口味</a></li>
+            </ul>
+        </div>
+        <div class="footer-col">
+            <h4 data-zh="公司" data-en="COMPANY">公司</h4>
+            <ul>
+                <li><a href="#story" data-zh="品牌故事" data-en="Our Story">品牌故事</a></li>
+                <li><a onclick="openInfoModal('franchise')" data-zh="加盟合作" data-en="Franchise">加盟合作</a></li>
+                <li><a onclick="openInfoModal('careers')" data-zh="招贤纳士" data-en="Careers">招贤纳士</a></li>
+                <li><a href="#contact" data-zh="联系我们" data-en="Contact Us">联系我们</a></li>
+            </ul>
+        </div>
+        <div class="footer-col">
+            <h4 data-zh="服务" data-en="SERVICE">服务</h4>
+            <ul>
+                <li><a onclick="openInfoModal('delivery')" data-zh="外卖配送" data-en="Delivery">外卖配送</a></li>
+                <li><a onclick="openInfoModal('event')" data-zh="活动策划" data-en="Event Planning">活动策划</a></li>
+                <li><a onclick="openInfoModal('wholesale')" data-zh="企业采购" data-en="Wholesale">企业采购</a></li>
+                <li><a onclick="openInfoModal('gift')" data-zh="礼品服务" data-en="Gift Service">礼品服务</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p data-zh="© 2024 北京麦洛淇食品科技有限公司 · 保留所有权利" data-en="© 2024 Beijing Mygelato Food Technology Co., Ltd. · All Rights Reserved">© 2024 北京麦洛淇食品科技有限公司 · 保留所有权利</p>
+        <a href="http://www.mygelato.cn" target="_blank">www.mygelato.cn</a>
+    </div>
+</footer>
+
+<!-- PRODUCT MODAL -->
+<div class="modal-overlay" id="prodModal" onclick="closeProdModal()">
+    <div class="modal-box" onclick="event.stopPropagation()">
+        <button class="modal-close" onclick="closeProdModal()">×</button>
+        <div id="prodModalBody"></div>
+    </div>
+</div>
+
+<!-- INFO MODAL -->
+<div class="modal-overlay" id="infoModal" onclick="closeInfoModal()">
+    <div class="modal-box" onclick="event.stopPropagation()">
+        <button class="modal-close" onclick="closeInfoModal()">×</button>
+        <div id="infoModalBody"></div>
+    </div>
+</div>
+
+<div class="notif" id="notif"></div>
+
+<script>
+    // ─── DATA ───────────────────────────────────────────────────────────────────
+    const products = [
+        { id:'strawberry', bg:'linear-gradient(135deg,#FFE0E8,#FFB5C5)', scoop:'linear-gradient(135deg,#FF6B8A,#FF9EAD)', tag:{ zh:'经典必选', en:'CLASSIC' },
+          name:{ zh:'草莓恋曲', en:'Strawberry Serenade' }, price:'¥ 38',
+          desc:{ zh:'精选四川草莓，天然果泥调制，不含人工色素，入口即化，甜蜜香气令人难以忘怀。', en:'Crafted with Sichuan strawberry puree — no artificial colors, a melt-in-mouth sweetness you will never forget.' },
+          detail:{ zh:'净含量：100g | 规格：单个 | 保质期：12个月', en:'Net: 100g | Size: Single | Shelf life: 12 months' }
+        },
+        { id:'chocolate', bg:'linear-gradient(135deg,#F5E6D0,#D4A27A)', scoop:'linear-gradient(135deg,#3E1508,#7B3F15)', tag:{ zh:'招牌爆款', en:'BESTSELLER' },
+          name:{ zh:'黑巧深情', en:'Dark Chocolate Passion' }, price:'¥ 42',
+          desc:{ zh:'精选70%比利时顶级黑巧克力，层次深邃，口感醇厚，每一口都是对巧克力的深情告白。', en:'70% premium Belgian dark chocolate — deep, rich and layered. A passionate ode to chocolate in every spoonful.' },
+          detail:{ zh:'净含量：100g | 规格：单个 | 保质期：12个月', en:'Net: 100g | Size: Single | Shelf life: 12 months' }
+        },
+        { id:'matcha', bg:'linear-gradient(135deg,#E8F5E0,#B5D5A0)', scoop:'linear-gradient(135deg,#2E6A26,#5FA850)', tag:{ zh:'东方臻选', en:'ORIENTAL' },
+          name:{ zh:'抹茶雅韵', en:'Matcha Elegance' }, price:'¥ 45',
+          desc:{ zh:'甄选日本宇治特级抹茶，清雅回甘，意式工艺与东方茶韵的完美融合，茶香悠远绵长。', en:'Premium Japanese Uji matcha — elegant bitterness and lasting aroma, a perfect fusion of Italian craft and Eastern tea culture.' },
+          detail:{ zh:'净含量：100g | 规格：单个 | 保质期：12个月', en:'Net: 100g | Size: Single | Shelf life: 12 months' }
+        },
+        { id:'vanilla', bg:'linear-gradient(135deg,#FFF8DC,#FFE890)', scoop:'linear-gradient(135deg,#EDD96A,#D4B840)', tag:{ zh:'经典之选', en:'CLASSIC' },
+          name:{ zh:'香草云朵', en:'Vanilla Cloud' }, price:'¥ 36',
+          desc:{ zh:'马达加斯加天然香草荚精萃，奶香馥郁，口感绵密如云，经典永不过时。', en:'Madagascar vanilla bean extract — milky, cloud-soft and timeless. The classic that never goes out of style.' },
+          detail:{ zh:'净含量：100g | 规格：单个 | 保质期：12个月', en:'Net: 100g | Size: Single | Shelf life: 12 months' }
+        },
+        { id:'mango', bg:'linear-gradient(135deg,#FFF3CC,#FFD166)', scoop:'linear-gradient(135deg,#FF8C00,#FFB732)', tag:{ zh:'热带风情', en:'TROPICAL' },
+          name:{ zh:'芒果探戈', en:'Mango Tango' }, price:'¥ 40',
+          desc:{ zh:'采用新鲜泰国金枕芒果制作，果肉饱满，热带风情浓烈，每一口都是阳光海岸的馈赠。', en:'Fresh Thai Musang King mango — plump, tropical and sunshine-kissed. Paradise in every bite.' },
+          detail:{ zh:'净含量：100g | 规格：单个 | 保质期：12个月', en:'Net: 100g | Size: Single | Shelf life: 12 months' }
+        },
+        { id:'berry', bg:'linear-gradient(135deg,#EDE0F8,#C898E0)', scoop:'linear-gradient(135deg,#5E1E90,#9B59B6)', tag:{ zh:'莓果狂欢', en:'BERRY BURST' },
+          name:{ zh:'莓果狂想', en:'Berry Rhapsody' }, price:'¥ 44',
+          desc:{ zh:'精选蓝莓、覆盆子与黑莓三重融合，酸甜交织，富含花青素，美味与健康并驾齐驱。', en:'Blueberry, raspberry and blackberry in perfect harmony — a sweet-tart symphony rich in antioxidants.' },
+          detail:{ zh:'净含量：100g | 规格：单个 | 保质期：12个月', en:'Net: 100g | Size: Single | Shelf life: 12 months' }
+        }
+    ];
+
+    const flavors = [
+        { color:'linear-gradient(135deg,#FF6B8A,#FFB0C0)', zh:'草莓', en:'Strawberry', sub:'STRAWBERRY' },
+        { color:'linear-gradient(135deg,#3E1508,#7B3F15)', zh:'黑巧克力', en:'Dark Chocolate', sub:'DARK CHOCOLATE' },
+        { color:'linear-gradient(135deg,#2E6A26,#5FA850)', zh:'抹茶', en:'Matcha', sub:'MATCHA' },
+        { color:'linear-gradient(135deg,#EDD96A,#D4B840)', zh:'香草', en:'Vanilla', sub:'VANILLA' },
+        { color:'linear-gradient(135deg,#FF8C00,#FFB732)', zh:'芒果', en:'Mango', sub:'MANGO' },
+        { color:'linear-gradient(135deg,#5E1E90,#9B59B6)', zh:'混合莓果', en:'Mixed Berry', sub:'MIXED BERRY' },
+        { color:'linear-gradient(135deg,#5C4033,#8B6347)', zh:'咖啡榛果', en:'Coffee Hazelnut', sub:'COFFEE HAZELNUT' },
+        { color:'linear-gradient(135deg,#3A82C4,#7BB8E8)', zh:'蓝莓酸奶', en:'Blueberry Yogurt', sub:'BLUEBERRY YOGURT' },
+        { color:'linear-gradient(135deg,#C0392B,#E74C3C)', zh:'荔枝玫瑰', en:'Lychee Rose', sub:'LYCHEE ROSE' },
+        { color:'linear-gradient(135deg,#F39C12,#E67E22)', zh:'柠檬挚爱', en:'Lemon Lover', sub:'LEMON LOVER' },
+        { color:'linear-gradient(135deg,#16A085,#48C9B0)', zh:'薄荷巧克力', en:'Mint Choco', sub:'MINT CHOCOLATE' },
+        { color:'linear-gradient(135deg,#8E44AD,#D7BDE2)', zh:'紫芋奶香', en:'Taro Milk', sub:'TARO MILK' },
+    ];
+
+    const infoData = {
+        franchise:{
+            zh:{ title:'加盟合作', body:'欢迎加入麦洛淇大家庭！我们提供全面的加盟支持体系：<br><br>✦ 品牌授权与视觉输出<br>✦ 核心原料统一供应<br>✦ 系统化技术培训<br>✦ 全程营销与运营支持<br>✦ 选址与装修设计指导<br><br>如有合作意向，欢迎致电洽谈：<br>📞 杨 &nbsp;178-1209-8632<br>📞 王 &nbsp;137-1621-7716' },
+            en:{ title:'Franchise', body:'Welcome to the Mygelato family! We offer a comprehensive franchise support system:<br><br>✦ Brand licensing & visual guidelines<br>✦ Centralized ingredient supply<br>✦ Systematic technical training<br>✦ Full marketing & operations support<br>✦ Site selection & interior design guidance<br><br>For inquiries, please call us:<br>📞 Yang &nbsp;178-1209-8632<br>📞 Wang &nbsp;137-1621-7716' }
+        },
+        careers:{
+            zh:{ title:'招贤纳士', body:'麦洛淇正在寻找充满激情、热爱美食的优秀伙伴！我们提供有竞争力的薪酬待遇、完善的晋升通道和充满活力的工作环境。<br><br>当前招聘岗位：<br>✦ 冰淇淋研发工程师<br>✦ 品牌市场专员<br>✦ 门店运营管理<br>✦ 新媒体运营<br>✦ 销售拓展专员<br><br>简历请发送至：<br>📧 hr@mygelato.cn' },
+            en:{ title:'Careers', body:"Mygelato is looking for passionate food lovers to join our team! We offer competitive compensation, clear career paths, and a vibrant work culture.<br><br>Current openings:<br>✦ Gelato R&D Engineer<br>✦ Brand Marketing Specialist<br>✦ Store Operations Manager<br>✦ Social Media Manager<br>✦ Sales Development Executive<br><br>Send your resume to:<br>📧 hr@mygelato.cn" }
+        },
+        delivery:{
+            zh:{ title:'外卖配送', body:'麦洛淇支持同城外卖配送服务，覆盖北京市内主要区域。<br><br>✦ 配送平台：美团外卖、饿了么<br>✦ 配送时间：每日 10:00 – 21:30<br>✦ 起送金额：¥ 50<br>✦ 配送费：¥ 5 起<br><br>为确保冰淇淋品质，我们采用专业冷链保温包装，确保完美送达您的手中。' },
+            en:{ title:'Delivery Service', body:'Mygelato offers same-city delivery covering major areas of Beijing.<br><br>✦ Platforms: Meituan, Eleme<br>✦ Hours: Daily 10:00 – 21:30<br>✦ Min. order: ¥ 50<br>✦ Delivery fee: from ¥ 5<br><br>We use professional cold-chain insulated packaging to ensure your gelato arrives in perfect condition.' }
+        },
+        gift:{
+            zh:{ title:'礼品定制', body:'让麦洛淇为您的特殊时刻打造专属礼品！<br><br>✦ 定制冰淇淋礼盒<br>✦ 企业礼品批量定制<br>✦ 节日特别礼包<br>✦ 个性化包装设计<br>✦ 品牌LOGO定制<br><br>📦 起订量：10盒起<br>⏰ 提前预约：3个工作日<br><br>联系我们获取报价：<br>📞 杨 &nbsp;178-1209-8632' },
+            en:{ title:'Gift Customization', body:'Let Mygelato create a personalized gift for your special moments!<br><br>✦ Custom gelato gift boxes<br>✦ Corporate bulk gift solutions<br>✦ Holiday special packages<br>✦ Personalized packaging design<br>✦ Brand logo customization<br><br>📦 Min. order: 10 boxes<br>⏰ Lead time: 3 business days<br><br>Contact us for a quote:<br>📞 Yang &nbsp;178-1209-8632' }
+        },
+        event:{
+            zh:{ title:'活动策划', body:'让麦洛淇的甜蜜点亮您的每一个特别时刻！<br><br>✦ 企业团建冰淇淋DIY工坊<br>✦ 婚礼甜品台打造<br>✦ 生日派对定制服务<br>✦ 商业活动冰淇淋展台<br>✦ 学校亲子互动活动<br>✦ 节日嘉年华<br><br>⏰ 请提前7天预约<br>📞 联系我们获取专属方案！' },
+            en:{ title:'Event Planning', body:"Let Mygelato sweeten every special moment!<br><br>✦ Corporate team-building gelato DIY workshops<br>✦ Wedding dessert table setups<br>✦ Birthday party customization<br>✦ Commercial event gelato stations<br>✦ School family activity programs<br>✦ Holiday carnivals<br><br>⏰ Please book at least 7 days in advance<br>📞 Contact us for a tailored proposal!" }
+        },
+        wholesale:{
+            zh:{ title:'企业采购', body:'欢迎企业客户批量采购！<br><br>✦ 批量优惠（满50盒享九折）<br>✦ 支持定制包装与品牌植入<br>✦ 专属客服全程跟进<br>✦ 灵活配送方案<br>✦ 发票开具支持<br><br>适用场景：企业员工福利、年会礼品、节日慰问、商务接待<br><br>联系销售团队：<br>📞 杨 &nbsp;178-1209-8632<br>📞 王 &nbsp;137-1621-7716' },
+            en:{ title:'Wholesale / B2B', body:'Welcome, enterprise clients!<br><br>✦ Bulk discounts (10% off for 50+ boxes)<br>✦ Custom packaging & brand co-branding<br>✦ Dedicated account manager<br>✦ Flexible delivery options<br>✦ Official invoice support<br><br>Ideal for: Employee benefits, year-end gifts, holiday greetings, business entertaining<br><br>Contact our sales team:<br>📞 Yang &nbsp;178-1209-8632<br>📞 Wang &nbsp;137-1621-7716' }
+        }
+    };
+
+    // ─── LANGUAGE ────────────────────────────────────────────────────────────────
+    let lang = 'zh';
+
+    function toggleLang() {
+        lang = lang === 'zh' ? 'en' : 'zh';
+        document.getElementById('langBtn').textContent = lang === 'zh' ? 'EN' : '中文';
+        document.documentElement.lang = lang;
+        // standard data-zh / data-en elements
+        document.querySelectorAll('[data-zh]').forEach(el => {
+            const val = el.getAttribute('data-' + lang);
+            if (!val) return;
+            if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                el.placeholder = val;
+            } else {
+                el.innerHTML = val;
+            }
+        });
+        // placeholder fallback
+        document.querySelectorAll('[data-placeholder-zh]').forEach(el => {
+            el.placeholder = el.getAttribute('data-placeholder-' + lang) || '';
+        });
+        // select options
+        document.querySelectorAll('select option').forEach(opt => {
+            const v = opt.getAttribute('data-' + lang);
+            if (v) opt.textContent = v;
+        });
+        // re-render dynamic product cards
+        renderProducts();
+        renderFlavors();
+    }
+
+    // ─── RENDER PRODUCTS ────────────────────────────────────────────────────────
+    function renderProducts() {
+        const grid = document.getElementById('productsGrid');
+        grid.innerHTML = products.map(p => `
+            <div class="product-card fade-in" onclick="openProdModal('${p.id}')">
+                <div class="product-img" style="background:${p.bg};">
+                    <div class="ice-wrap">
+                        <div class="scoop" style="background:${p.scoop};"></div>
+                        <div class="cone-wrap">
+                            <svg class="cone-svg" viewBox="0 0 88 88" xmlns="http://www.w3.org/2000/svg">
+                                <polygon points="2,2 86,2 44,86" fill="#D4A27A"/>
+                                <polygon points="2,2 86,2 44,86" fill="url(#conePattern)" opacity="0.3"/>
+                                <line x1="2" y1="2" x2="44" y2="86" stroke="rgba(0,0,0,0.08)" stroke-width="0.8"/>
+                                <line x1="86" y1="2" x2="44" y2="86" stroke="rgba(0,0,0,0.08)" stroke-width="0.8"/>
+                                <line x1="20" y1="2" x2="44" y2="86" stroke="rgba(0,0,0,0.05)" stroke-width="0.5"/>
+                                <line x1="44" y1="2" x2="44" y2="86" stroke="rgba(0,0,0,0.05)" stroke-width="0.5"/>
+                                <line x1="68" y1="2" x2="44" y2="86" stroke="rgba(0,0,0,0.05)" stroke-width="0.5"/>
+                                <line x1="2" y1="20" x2="86" y2="20" stroke="rgba(0,0,0,0.05)" stroke-width="0.5"/>
+                                <line x1="2" y1="40" x2="86" y2="40" stroke="rgba(0,0,0,0.05)" stroke-width="0.5"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <div class="product-label">${p.tag[lang]}</div>
+                    <h3 class="product-name">${p.name[lang]}</h3>
+                    <p class="product-desc">${p.desc[lang]}</p>
+                    <div class="product-price">${p.price}</div>
+                </div>
+            </div>
+        `).join('');
+        // re-observe
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+    }
+
+    // ─── RENDER FLAVORS ─────────────────────────────────────────────────────────
+    function renderFlavors() {
+        const grid = document.getElementById('flavorsGrid');
+        grid.innerHTML = flavors.map(f => `
+            <div class="flavor-card fade-in">
+                <div class="flavor-ball" style="background:${f.color};"></div>
+                <div class="flavor-name">${f[lang]}</div>
+                <div class="flavor-sub">${f.sub}</div>
+            </div>
+        `).join('');
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+    }
+
+    // ─── PRODUCT MODAL ───────────────────────────────────────────────────────────
+    function openProdModal(id) {
+        const p = products.find(x => x.id === id);
+        if (!p) return;
+        document.getElementById('prodModalBody').innerHTML = `
+            <div style="text-align:center;margin-bottom:20px;">
+                <div style="width:90px;height:90px;border-radius:50%;background:${p.scoop};margin:0 auto 16px;box-shadow:0 6px 22px rgba(0,0,0,0.18);"></div>
+                <h3>${p.name[lang]}</h3>
+                <div class="modal-price">${p.price}</div>
+            </div>
+            <p style="margin-bottom:12px;">${p.desc[lang]}</p>
+            <p style="color:#bbb;font-size:13px;">${p.detail[lang]}</p>
+            <button class="modal-buy" onclick="closeProdModal();showNotif('${lang==='zh'?'✓ 已加入购物车！':'✓ Added to cart!'}')">${lang==='zh'?'立即选购':'Buy Now'}</button>
+        `;
+        document.getElementById('prodModal').classList.add('open');
+    }
+    function closeProdModal() { document.getElementById('prodModal').classList.remove('open'); }
+
+    // ─── INFO MODAL ──────────────────────────────────────────────────────────────
+    function openInfoModal(key) {
+        const d = infoData[key][lang];
+        document.getElementById('infoModalBody').innerHTML = `
+            <h3>${d.title}</h3>
+            <p style="margin-top:12px;">${d.body}</p>
+        `;
+        document.getElementById('infoModal').classList.add('open');
+    }
+    function closeInfoModal() { document.getElementById('infoModal').classList.remove('open'); }
+
+    // ─── FORM ────────────────────────────────────────────────────────────────────
+    function submitForm() {
+        const name = document.getElementById('fName').value.trim();
+        const phone = document.getElementById('fPhone').value.trim();
+        if (!name) { showNotif(lang==='zh'?'请输入您的姓名':'Please enter your name'); return; }
+        if (!phone) { showNotif(lang==='zh'?'请输入联系电话':'Please enter your phone number'); return; }
+        document.getElementById('fName').value = '';
+        document.getElementById('fPhone').value = '';
+        document.getElementById('fMsg').value = '';
+        showNotif(lang==='zh'?'✓ 留言已提交，我们将尽快联系您！':'✓ Message sent! We will contact you soon!');
+    }
+
+    // ─── NOTIFICATION ────────────────────────────────────────────────────────────
+    function showNotif(msg) {
+        const el = document.getElementById('notif');
+        el.textContent = msg;
+        el.classList.add('show');
+        setTimeout(() => el.classList.remove('show'), 3200);
+    }
+
+    // ─── MOBILE MENU ─────────────────────────────────────────────────────────────
+    function toggleMenu() {
+        document.getElementById('navLinks').classList.toggle('open');
+        document.getElementById('hbg').classList.toggle('open');
+    }
+    function closeMenu() {
+        document.getElementById('navLinks').classList.remove('open');
+        document.getElementById('hbg').classList.remove('open');
+    }
+    document.addEventListener('click', e => {
+        const nav = document.getElementById('navLinks');
+        const hbg = document.getElementById('hbg');
+        if (nav.classList.contains('open') && !nav.contains(e.target) && !hbg.contains(e.target)) closeMenu();
+    });
+
+    // ─── SCROLL EFFECTS ──────────────────────────────────────────────────────────
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.08 });
+
+    window.addEventListener('scroll', () => {
+        const pct = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight) * 100;
+        document.getElementById('progressBar').style.width = pct + '%';
+    });
+
+    // ─── SMOOTH SCROLL ───────────────────────────────────────────────────────────
+    document.addEventListener('click', e => {
+        const link = e.target.closest('a[href^="#"]');
+        if (!link) return;
+        const href = link.getAttribute('href');
+        if (href === '#' || href === '#!') return;
+        const target = document.querySelector(href);
+        if (target) { e.preventDefault(); target.scrollIntoView({ behavior:'smooth', block:'start' }); }
+    });
+
+    // ─── INIT ────────────────────────────────────────────────────────────────────
+    renderProducts();
+    renderFlavors();
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+
+
+</body></html>
