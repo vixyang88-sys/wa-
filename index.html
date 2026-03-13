@@ -1,4 +1,8 @@
-<!DOCTYPE html><html lang="zh"><head><meta name="x-poe-datastore-behavior" content="local_only"><meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta name="x-poe-datastore-behavior" content="local_only">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>麦洛淇 MYGELATO · 精致冰淇淋</title>
@@ -10,6 +14,9 @@
             --gold: #C9A96E;
             --cream: #FDF6EC;
             --dark: #1A1A1A;
+            --light-gray: #f8f8f8;
+            --gray: #eaeaea;
+            --text-gray: #666;
         }
         html { scroll-behavior: smooth; }
         body { font-family: 'Georgia', serif; color: #333; overflow-x: hidden; }
@@ -32,12 +39,9 @@
             text-decoration: none; color: var(--dark); font-size: 13px; letter-spacing: 1px;
             transition: color 0.3s; position: relative; padding-bottom: 3px;
         }
-        .nav-links a::after {
-            content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 1px;
-            background: var(--primary); transition: width 0.3s;
-        }
+        /* 移除导航链接下划线 */
+        .nav-links a::after { display: none; }
         .nav-links a:hover { color: var(--primary); }
-        .nav-links a:hover::after { width: 100%; }
         .lang-btn {
             background: var(--primary); color: white; border: none;
             padding: 8px 20px; border-radius: 25px; cursor: pointer;
@@ -49,6 +53,15 @@
         .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
         .hamburger.open span:nth-child(2) { opacity: 0; }
         .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+        /* 会员按钮样式 */
+        .member-btn {
+            background: var(--gold); color: white; border: none;
+            padding: 8px 20px; border-radius: 25px; cursor: pointer;
+            font-size: 12px; letter-spacing: 2px; transition: all 0.3s;
+            margin-left: 10px;
+        }
+        .member-btn:hover { background: #b8905a; transform: scale(1.05); }
 
         /* HERO */
         .hero {
@@ -113,49 +126,74 @@
         .section-header { text-align: center; margin-bottom: 70px; }
         .section-badge { display: block; color: var(--gold); font-size: 11px; letter-spacing: 5px; text-transform: uppercase; margin-bottom: 15px; }
         .section-title { font-size: 42px; font-weight: 300; color: var(--dark); letter-spacing: 3px; margin-bottom: 20px; }
-        .section-divider { width: 60px; height: 2px; background: linear-gradient(90deg, var(--primary), var(--gold)); margin: 0 auto 22px; }
+        /* 移除section分割线 */
+        .section-divider { display: none; }
         .section-desc { color: #777; font-size: 16px; line-height: 1.9; max-width: 580px; margin: 0 auto; }
 
         /* FADE IN */
         .fade-in { opacity: 0; transform: translateY(28px); transition: opacity 0.65s ease, transform 0.65s ease; }
         .fade-in.visible { opacity: 1; transform: translateY(0); }
 
-        /* PRODUCTS */
+        /* PRODUCTS - 核心修改部分 */
         #products { background: var(--cream); }
-        .products-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 28px; max-width: 1200px; margin: 0 auto;
+        .products-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            overflow: hidden;
+            position: relative;
         }
+        .products-grid {
+            display: flex;
+            gap: 28px;
+            animation: scrollProducts 20s linear infinite;
+            padding: 0 10px;
+        }
+        /* 产品循环滚动动画 */
+        @keyframes scrollProducts {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+        /* 鼠标悬停暂停滚动 */
+        .products-container:hover .products-grid {
+            animation-play-state: paused;
+        }
+        .products-grid::-webkit-scrollbar { display: none; }
         .product-card {
-            background: white; border-radius: 20px; overflow: hidden;
-            transition: all 0.4s; cursor: pointer;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.4s;
+            cursor: pointer;
             box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            flex: 0 0 calc(25% - 21px);
+            min-width: 200px;
+            aspect-ratio: 9/16;
+            display: flex;
+            flex-direction: column;
         }
         .product-card:hover { transform: translateY(-10px); box-shadow: 0 20px 50px rgba(139,26,74,0.15); }
         .product-img {
-            height: 230px; display: flex; align-items: flex-end;
-            justify-content: center; padding-bottom: 10px; position: relative; overflow: hidden;
-        }
-        .ice-wrap { display: flex; flex-direction: column; align-items: center; }
-        .scoop {
-            width: 110px; height: 110px; border-radius: 50% 50% 48% 48%;
-            box-shadow: inset -8px -8px 18px rgba(0,0,0,0.12), 3px 3px 12px rgba(0,0,0,0.12);
-            position: relative; z-index: 2;
-        }
-        .scoop::after {
-            content: ''; position: absolute; top: 15px; left: 20px;
-            width: 28px; height: 22px; border-radius: 50%;
-            background: rgba(255,255,255,0.22);
-        }
-        .cone-wrap {
-            width: 88px; height: 88px; margin-top: -6px; position: relative; z-index: 1;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            position: relative;
             overflow: hidden;
         }
-        .cone-svg { width: 100%; height: 100%; }
-        .product-info { padding: 24px 26px; }
+        .product-img img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        .product-info { 
+            padding: 24px 26px;
+            flex-shrink: 0;
+        }
         .product-name { font-size: 20px; color: var(--dark); letter-spacing: 1px; margin-bottom: 8px; }
         .product-desc { font-size: 14px; color: #888; line-height: 1.7; margin-bottom: 14px; }
-        .product-price { font-size: 22px; color: var(--primary); font-weight: bold; }
+        /* 移除价格样式 */
+        .product-price { display: none; }
         .product-label {
             display: inline-block; font-size: 11px; color: var(--gold); letter-spacing: 2px;
             border: 1px solid var(--gold); padding: 3px 10px; border-radius: 10px; margin-bottom: 10px;
@@ -276,37 +314,301 @@
         .footer-bottom a { color: #444; text-decoration: none; transition: color 0.3s; }
         .footer-bottom a:hover { color: var(--gold); }
 
-        /* MODAL */
-        .modal-overlay {
+        /* 全屏图片查看弹窗 */
+        .fullscreen-modal {
             display: none; position: fixed; inset: 0;
-            background: rgba(0,0,0,0.72); z-index: 5000;
-            align-items: center; justify-content: center; padding: 20px;
+            background: rgba(0,0,0,0.95); z-index: 9999;
+            align-items: center; justify-content: center;
+            padding: 20px;
         }
-        .modal-overlay.open { display: flex; }
-        .modal-box {
-            background: white; border-radius: 22px; padding: 44px;
-            max-width: 480px; width: 100%; position: relative;
-            animation: modalPop 0.3s cubic-bezier(.34,1.56,.64,1);
-            max-height: 90vh; overflow-y: auto;
+        .fullscreen-modal.open { display: flex; }
+        .fullscreen-img {
+            max-width: 95%;
+            max-height: 95vh;
+            object-fit: contain;
+            animation: zoomIn 0.3s ease;
         }
-        @keyframes modalPop { from{transform:scale(0.75);opacity:0} to{transform:scale(1);opacity:1} }
-        .modal-close {
-            position: absolute; top: 16px; right: 18px;
-            background: none; border: none; font-size: 26px;
-            cursor: pointer; color: #bbb; line-height: 1;
+        @keyframes zoomIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .fullscreen-close {
+            position: absolute; top: 20px; right: 30px;
+            background: none; border: none; font-size: 40px;
+            color: white; cursor: pointer;
             transition: color 0.2s;
         }
-        .modal-close:hover { color: var(--primary); }
-        .modal-box h3 { font-size: 22px; color: var(--primary); margin-bottom: 16px; letter-spacing: 1px; }
-        .modal-box p { color: #555; line-height: 2; font-size: 15px; }
-        .modal-box .modal-price { font-size: 26px; color: var(--primary); font-weight: bold; margin: 12px 0; }
-        .modal-buy {
-            width: 100%; background: linear-gradient(135deg, var(--primary), #C8476C);
-            color: white; border: none; padding: 14px; border-radius: 28px;
-            font-size: 13px; letter-spacing: 3px; cursor: pointer;
-            margin-top: 22px; font-family: inherit; transition: all 0.3s;
+        .fullscreen-close:hover { color: var(--gold); }
+
+        /* 产品详情弹窗 - 优化后的样式 */
+        .product-detail-modal {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.9); z-index: 9998;
+            padding: 20px; overflow-y: auto;
         }
-        .modal-buy:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(139,26,74,0.35); }
+        .product-detail-modal.open { display: flex; justify-content: center; align-items: flex-start; }
+        .product-detail-box {
+            background: white; border-radius: 24px;
+            max-width: 1100px; width: 100%;
+            margin: 80px auto; padding: 50px;
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            animation: modalPop 0.4s ease-out;
+            box-shadow: 0 20px 80px rgba(0,0,0,0.15);
+        }
+        @keyframes modalPop {
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .product-detail-img {
+            width: 100%; border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+        .product-detail-img::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(139,26,74,0.02), rgba(201,169,110,0.02));
+            z-index: 1;
+        }
+        .product-detail-img img {
+            width: 100%; height: auto;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        .product-detail-img:hover img {
+            transform: scale(1.03);
+        }
+        .product-detail-content {
+            display: flex; flex-direction: column;
+            gap: 25px;
+            padding-top: 10px;
+        }
+        .product-detail-header {
+            margin-bottom: 10px;
+        }
+        .product-detail-label {
+            display: inline-block; font-size: 12px; color: var(--gold);
+            letter-spacing: 2px; border: 1px solid var(--gold);
+            padding: 6px 14px; border-radius: 12px;
+            width: fit-content;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }
+        .product-detail-label:hover {
+            background: var(--gold);
+            color: white;
+        }
+        .product-detail-name {
+            font-size: 36px; color: var(--dark);
+            letter-spacing: 2px; line-height: 1.2;
+            margin-bottom: 8px;
+            font-weight: 400;
+        }
+        .product-detail-en {
+            font-size: 15px; color: #999;
+            letter-spacing: 6px; text-transform: uppercase;
+            margin-bottom: 20px;
+            display: block;
+        }
+        .product-detail-divider {
+            width: 60px;
+            height: 2px;
+            background: var(--gold);
+            margin: 25px 0;
+            border-radius: 1px;
+        }
+        .product-detail-section {
+            margin: 10px 0;
+            padding: 20px;
+            background: var(--light-gray);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+        .product-detail-section:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            background: white;
+            border: 1px solid var(--gray);
+        }
+        .product-detail-section-title {
+            font-size: 18px; color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .product-detail-section-title::before {
+            content: '';
+            width: 4px;
+            height: 18px;
+            background: var(--gold);
+            border-radius: 2px;
+            display: inline-block;
+        }
+        .product-detail-section-content {
+            font-size: 15px; color: var(--text-gray);
+            line-height: 1.8;
+            letter-spacing: 0.5px;
+        }
+        .product-detail-close {
+            position: absolute; top: 20px; right: 30px;
+            background: rgba(255,255,255,0.1);
+            border: none; font-size: 36px;
+            color: white; cursor: pointer;
+            transition: all 0.2s;
+            z-index: 9999;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .product-detail-close:hover {
+            color: var(--gold);
+            background: rgba(255,255,255,0.2);
+            transform: scale(1.1);
+        }
+        
+        /* 响应式产品详情弹窗 - 优化版 */
+        @media(max-width: 992px) {
+            .product-detail-box {
+                grid-template-columns: 1fr;
+                margin: 60px auto;
+                padding: 40px;
+                gap: 40px;
+            }
+            .product-detail-name {
+                font-size: 30px;
+            }
+            .product-detail-section {
+                padding: 18px;
+            }
+        }
+        
+        @media(max-width: 768px) {
+            .product-detail-box {
+                padding: 30px 25px;
+                margin: 50px auto;
+            }
+            .product-detail-name {
+                font-size: 26px;
+            }
+            .product-detail-content {
+                gap: 20px;
+            }
+            .product-detail-section {
+                padding: 15px;
+            }
+            .product-detail-close {
+                font-size: 30px;
+                width: 40px;
+                height: 40px;
+            }
+        }
+
+        /* 会员弹窗样式 */
+        .member-modal {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.85); z-index: 8000;
+            align-items: center; justify-content: center;
+            padding: 20px;
+        }
+        .member-modal.open { display: flex; }
+        .member-box {
+            background: white; border-radius: 22px; padding: 40px;
+            max-width: 500px; width: 100%;
+            animation: modalPop 0.3s cubic-bezier(.34,1.56,.64,1);
+        }
+        @keyframes modalPop { 
+            from { transform: scale(0.75); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .member-close {
+            position: absolute; top: 20px; right: 25px;
+            background: none; border: none; font-size: 28px;
+            color: #bbb; cursor: pointer;
+            transition: color 0.2s;
+        }
+        .member-close:hover { color: var(--primary); }
+        .member-title {
+            font-size: 24px; color: var(--primary);
+            text-align: center; margin-bottom: 25px;
+            letter-spacing: 2px;
+        }
+        .member-tabs {
+            display: flex; justify-content: center;
+            gap: 10px; margin-bottom: 25px;
+        }
+        .member-tab {
+            padding: 8px 20px; border: 1px solid #eee;
+            border-radius: 20px; cursor: pointer;
+            font-size: 13px; letter-spacing: 1px;
+            transition: all 0.3s;
+        }
+        .member-tab.active {
+            background: var(--primary); color: white;
+            border-color: var(--primary);
+        }
+        .member-form { display: none; }
+        .member-form.active { display: block; }
+        .member-form-row { margin-bottom: 18px; }
+        .member-form-row label {
+            display: block; font-size: 11px;
+            letter-spacing: 2px; color: #aaa;
+            margin-bottom: 7px; text-transform: uppercase;
+        }
+        .member-form-row input {
+            width: 100%; padding: 12px 14px;
+            border: 1px solid #e8e8e8; border-radius: 9px;
+            font-size: 14px; font-family: inherit;
+            transition: border-color 0.3s; outline: none;
+            background: #fafafa;
+        }
+        .member-form-row input:focus {
+            border-color: var(--primary);
+            background: white;
+        }
+        .member-btn-submit {
+            width: 100%; background: linear-gradient(135deg, var(--primary), #C8476C);
+            color: white; border: none; padding: 14px;
+            border-radius: 28px; font-size: 13px;
+            letter-spacing: 3px; cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        .member-btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139,26,74,0.35);
+        }
+        .member-benefits {
+            margin-top: 20px; padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        .member-benefits h4 {
+            font-size: 14px; color: var(--dark);
+            margin-bottom: 10px; letter-spacing: 1px;
+        }
+        .member-benefits ul {
+            list-style: none; padding-left: 15px;
+        }
+        .member-benefits li {
+            font-size: 13px; color: #666;
+            margin-bottom: 8px;
+            position: relative;
+        }
+        .member-benefits li::before {
+            content: '•'; color: var(--gold);
+            position: absolute; left: -15px;
+        }
 
         /* NOTIFICATION */
         .notif {
@@ -324,6 +626,8 @@
             .story-visual { min-height: 320px; width: 100%; }
             .contact-grid { grid-template-columns: 1fr; }
             .footer-grid { grid-template-columns: 1fr 1fr; }
+            .product-card { flex: 0 0 calc(50% - 14px); }
+            .products-grid { animation-duration: 25s; }
         }
         @media(max-width:700px){
             nav { padding: 12px 20px; }
@@ -340,11 +644,15 @@
             .section { padding: 70px 20px; }
             .story-stats { grid-template-columns: 1fr; }
             .footer-grid { grid-template-columns: 1fr; }
-            .modal-box { padding: 30px 24px; }
+            .member-box { padding: 24px; max-width: 95%; }
+            .product-card { flex: 0 0 calc(100% - 0px); min-width: 280px; }
+            .products-grid { animation-duration: 30s; }
         }
         @media(max-width:430px){
             .hero h1 { font-size: 38px; }
             .hero-tagline { font-size: 15px; }
+            .nav-links { top: 60px; }
+            .fullscreen-close { font-size: 30px; }
         }
     </style>
 </head>
@@ -352,7 +660,7 @@
 
 <div id="progressBar"></div>
 
-<!-- NAVIGATION -->
+<!-- NAVIGATION - 调整了会员中心和语言按钮的位置 -->
 <nav id="navbar">
     <a href="#home" class="logo" style="text-decoration:none;">
         <svg width="46" height="46" viewBox="0 0 46 46" fill="none">
@@ -378,6 +686,10 @@
         <li><a href="#story" onclick="closeMenu()" data-zh="品牌故事" data-en="OUR STORY">品牌故事</a></li>
         <li><a href="#flavors" onclick="closeMenu()" data-zh="口味探索" data-en="FLAVORS">口味探索</a></li>
         <li><a href="#contact" onclick="closeMenu()" data-zh="联系我们" data-en="CONTACT">联系我们</a></li>
+        <!-- 调整位置：会员中心在前，语言按钮在后 -->
+        <li><button class="member-btn" id="memberBtn" onclick="openMemberModal()">
+            <span data-zh="会员中心" data-en="Member Center">会员中心</span>
+        </button></li>
         <li><button class="lang-btn" id="langBtn" onclick="toggleLang()">EN</button></li>
     </ul>
 </nav>
@@ -403,7 +715,7 @@
     <div class="hero-content">
         <div class="hero-badge" data-zh="北京 · 精致冰淇淋品牌" data-en="BEIJING · PREMIUM GELATO BRAND">北京 · 精致冰淇淋品牌</div>
         <h1 data-zh="麦洛淇" data-en="MYGELATO">麦洛淇</h1>
-        <div class="hero-en" data-zh="MY GELATO · 意式冰淇淋" data-en="麦洛淇 · 意式冰淇淋">MY GELATO · 意式冰淇淋</div>
+        <div class="hero-en" data-zh="MY GELATO · 意式冰淇淋" data-en="MYGELATO · ITALIAN GELATO">MY GELATO · 意式冰淇淋</div>
         <div class="hero-tagline" data-zh="每一勺，都是一次甜蜜的旅行" data-en="Every Scoop — A Sweet Journey">每一勺，都是一次甜蜜的旅行</div>
         <div class="hero-btns">
             <a href="#products" class="btn-white" data-zh="探索产品" data-en="Explore Products">探索产品</a>
@@ -415,15 +727,115 @@
     </div>
 </section>
 
-<!-- PRODUCTS -->
+<!-- PRODUCTS - 核心优化：点击产品卡片跳转详情页 -->
 <section id="products" class="section">
     <div class="section-header fade-in">
         <span class="section-badge" data-zh="SIGNATURE PRODUCTS" data-en="SIGNATURE PRODUCTS">SIGNATURE PRODUCTS</span>
         <h2 class="section-title" data-zh="明星产品" data-en="Premium Collection">明星产品</h2>
-        <div class="section-divider"></div>
         <p class="section-desc" data-zh="精选全球优质原料，融合意式传统工艺与现代创新，每一款都是味觉与艺术的双重享受。" data-en="Premium global ingredients meet Italian craftsmanship — each creation is a celebration of taste and artistry.">精选全球优质原料，融合意式传统工艺与现代创新，每一款都是味觉与艺术的双重享受。</p>
     </div>
-    <div class="products-grid" id="productsGrid"></div>
+    <!-- 产品循环滚动容器 -->
+    <div class="products-container">
+        <div class="products-grid" id="productsGrid">
+            <!-- 产品1 - 金丝奶萃 -->
+            <div class="product-card" onclick="openProductDetail('golden-silk')">
+                <div class="product-img">
+                    <img src="https://p11-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/c7871d24ac6144088ab7f99e5006780d.jpg~tplv-a9rns2rl98-24:720:720.jpg?lk3s=8e244e95&rcl=202603131015194944F9E0291DE35B51DF&rrcfp=8a172a1a&x-expires=1773972919&x-signature=Jq9MyYrSGuwJhUsRNmPOABw1hsw%3D" alt="金丝奶萃">
+                </div>
+                <div class="product-info">
+                    <span class="product-label" data-zh="经典" data-en="CLASSIC">经典</span>
+                    <h3 class="product-name" data-zh="金丝奶萃" data-en="Golden Silk Milk Extract">金丝奶萃</h3>
+                    <p class="product-desc" data-zh="传承西域手工奶食古法技艺，零水基还原、零添加剂、零色素，5.0高蛋白，奶香醇厚。" data-en="Inherits ancient Western Region handmade dairy craftsmanship, zero water reduction, zero additives, zero pigments, 5.0 high protein, rich milk flavor.">传承西域手工奶食古法技艺，零水基还原、零添加剂、零色素，5.0高蛋白，奶香醇厚。</p>
+                    <div class="product-price">¥58</div>
+                </div>
+            </div>
+            <!-- 产品2 - 荔枝多酚胶原蛋白 -->
+            <div class="product-card" onclick="openProductDetail('lychee-collagen')">
+                <div class="product-img">
+                    <img src="https://p3-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/5af65057014d46ab9757fd648b50ec5d.jpg~tplv-a9rns2rl98-24:720:720.jpg?lk3s=8e244e95&rcl=202603131015194944F9E0291DE35B51DF&rrcfp=8a172a1a&x-expires=1773972919&x-signature=%2BzWgQh3DtPvy%2Fr1k57bOxIru%2FSA%3D" alt="荔枝多酚胶原蛋白">
+                </div>
+                <div class="product-info">
+                    <span class="product-label" data-zh="养颜" data-en="BEAUTY">养颜</span>
+                    <h3 class="product-name" data-zh="荔枝多酚胶原蛋白" data-en="Lychee Polyphenol Collagen">荔枝多酚胶原蛋白</h3>
+                    <p class="product-desc" data-zh="精选岭南荔枝提取多酚，添加胶原蛋白肽，低热量，美容养颜，清甜不腻。" data-en="Selected Lingnan lychee polyphenols, added collagen peptides, low calorie, beauty and skin care, sweet but not greasy.">精选岭南荔枝提取多酚，添加胶原蛋白肽，低热量，美容养颜，清甜不腻。</p>
+                    <div class="product-price">¥68</div>
+                </div>
+            </div>
+            <!-- 产品3 - 斑斓椰香 -->
+            <div class="product-card" onclick="openProductDetail('pandan-coconut')">
+                <div class="product-img">
+                    <img src="https://p11-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/9ddf3a01cae841b089dfb7f464751f17.jpg~tplv-a9rns2rl98-24:720:720.jpg?lk3s=8e244e95&rcl=202603131015194944F9E0291DE35B51DF&rrcfp=8a172a1a&x-expires=1773972919&x-signature=WTik3FYrco1U1Bl7Owgs9eb%2BkTc%3D" alt="斑斓椰香">
+                </div>
+                <div class="product-info">
+                    <span class="product-label" data-zh="限定" data-en="LIMITED">限定</span>
+                    <h3 class="product-name" data-zh="斑斓椰香" data-en="Pandan Coconut">斑斓椰香</h3>
+                    <p class="product-desc" data-zh="东南亚斑斓叶搭配海南椰乳，天然清香，低脂肪，热带风情，四季皆宜。" data-en="Southeast Asian pandan leaves with Hainan coconut milk, natural fragrance, low fat, tropical style, suitable for all seasons.">东南亚斑斓叶搭配海南椰乳，天然清香，低脂肪，热带风情，四季皆宜。</p>
+                    <div class="product-price">¥62</div>
+                </div>
+            </div>
+            <!-- 产品4 - 人参萃巧 -->
+            <div class="product-card" onclick="openProductDetail('ginseng-chocolate')">
+                <div class="product-img">
+                    <img src="https://p26-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/859b872078e048c4bcd0c6ded3cb4446.jpg~tplv-a9rns2rl98-24:720:720.jpg?lk3s=8e244e95&rcl=202603131015194944F9E0291DE35B51DF&rrcfp=8a172a1a&x-expires=1773972919&x-signature=DkmSal6SwS2b%2FDARZHZ9M3ZE%2BGk%3D" alt="人参萃巧">
+                </div>
+                <div class="product-info">
+                    <span class="product-label" data-zh="养生" data-en="HEALTH">养生</span>
+                    <h3 class="product-name" data-zh="人参萃巧" data-en="Ginseng Extract Chocolate">人参萃巧</h3>
+                    <p class="product-desc" data-zh="长白山人参提取精华融合进口黑巧克力，温润养身，补能益气，凉而不寒。" data-en="Changbai Mountain ginseng extract combined with imported dark chocolate, nourishing, energy supplement, cool but not cold.">长白山人参提取精华融合进口黑巧克力，温润养身，补能益气，凉而不寒。</p>
+                    <div class="product-price">¥78</div>
+                </div>
+            </div>
+            <!-- 重复产品实现无缝滚动 -->
+            <!-- 产品1 - 金丝奶萃 -->
+            <div class="product-card" onclick="openProductDetail('golden-silk')">
+                <div class="product-img">
+                    <img src="https://p11-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/c7871d24ac6144088ab7f99e5006780d.jpg~tplv-a9rns2rl98-24:720:720.jpg?lk3s=8e244e95&rcl=202603131015194944F9E0291DE35B51DF&rrcfp=8a172a1a&x-expires=1773972919&x-signature=Jq9MyYrSGuwJhUsRNmPOABw1hsw%3D" alt="金丝奶萃">
+                </div>
+                <div class="product-info">
+                    <span class="product-label" data-zh="经典" data-en="CLASSIC">经典</span>
+                    <h3 class="product-name" data-zh="金丝奶萃" data-en="Golden Silk Milk Extract">金丝奶萃</h3>
+                    <p class="product-desc" data-zh="传承西域手工奶食古法技艺，零水基还原、零添加剂、零色素，5.0高蛋白，奶香醇厚。" data-en="Inherits ancient Western Region handmade dairy craftsmanship, zero water reduction, zero additives, zero pigments, 5.0 high protein, rich milk flavor.">传承西域手工奶食古法技艺，零水基还原、零添加剂、零色素，5.0高蛋白，奶香醇厚。</p>
+                    <div class="product-price">¥58</div>
+                </div>
+            </div>
+            <!-- 产品2 - 荔枝多酚胶原蛋白 -->
+            <div class="product-card" onclick="openProductDetail('lychee-collagen')">
+                <div class="product-img">
+                    <img src="https://p3-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/5af65057014d46ab9757fd648b50ec5d.jpg~tplv-a9rns2rl98-24:720:720.jpg?lk3s=8e244e95&rcl=202603131015194944F9E0291DE35B51DF&rrcfp=8a172a1a&x-expires=1773972919&x-signature=%2BzWgQh3DtPvy%2Fr1k57bOxIru%2FSA%3D" alt="荔枝多酚胶原蛋白">
+                </div>
+                <div class="product-info">
+                    <span class="product-label" data-zh="养颜" data-en="BEAUTY">养颜</span>
+                    <h3 class="product-name" data-zh="荔枝多酚胶原蛋白" data-en="Lychee Polyphenol Collagen">荔枝多酚胶原蛋白</h3>
+                    <p class="product-desc" data-zh="精选岭南荔枝提取多酚，添加胶原蛋白肽，低热量，美容养颜，清甜不腻。" data-en="Selected Lingnan lychee polyphenols, added collagen peptides, low calorie, beauty and skin care, sweet but not greasy.">精选岭南荔枝提取多酚，添加胶原蛋白肽，低热量，美容养颜，清甜不腻。</p>
+                    <div class="product-price">¥68</div>
+                </div>
+            </div>
+            <!-- 产品3 - 斑斓椰香 -->
+            <div class="product-card" onclick="openProductDetail('pandan-coconut')">
+                <div class="product-img">
+                    <img src="https://p11-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/9ddf3a01cae841b089dfb7f464751f17.jpg~tplv-a9rns2rl98-24:720:720.jpg?lk3s=8e244e95&rcl=202603131015194944F9E0291DE35B51DF&rrcfp=8a172a1a&x-expires=1773972919&x-signature=WTik3FYrco1U1Bl7Owgs9eb%2BkTc%3D" alt="斑斓椰香">
+                </div>
+                <div class="product-info">
+                    <span class="product-label" data-zh="限定" data-en="LIMITED">限定</span>
+                    <h3 class="product-name" data-zh="斑斓椰香" data-en="Pandan Coconut">斑斓椰香</h3>
+                    <p class="product-desc" data-zh="东南亚斑斓叶搭配海南椰乳，天然清香，低脂肪，热带风情，四季皆宜。" data-en="Southeast Asian pandan leaves with Hainan coconut milk, natural fragrance, low fat, tropical style, suitable for all seasons.">东南亚斑斓叶搭配海南椰乳，天然清香，低脂肪，热带风情，四季皆宜。</p>
+                    <div class="product-price">¥62</div>
+                </div>
+            </div>
+            <!-- 产品4 - 人参萃巧 -->
+            <div class="product-card" onclick="openProductDetail('ginseng-chocolate')">
+                <div class="product-img">
+                    <img src="https://p26-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/859b872078e048c4bcd0c6ded3cb4446.jpg~tplv-a9rns2rl98-24:720:720.jpg?lk3s=8e244e95&rcl=202603131015194944F9E0291DE35B51DF&rrcfp=8a172a1a&x-expires=1773972919&x-signature=DkmSal6SwS2b%2FDARZHZ9M3ZE%2BGk%3D" alt="人参萃巧">
+                </div>
+                <div class="product-info">
+                    <span class="product-label" data-zh="养生" data-en="HEALTH">养生</span>
+                    <h3 class="product-name" data-zh="人参萃巧" data-en="Ginseng Extract Chocolate">人参萃巧</h3>
+                    <p class="product-desc" data-zh="长白山人参提取精华融合进口黑巧克力，温润养身，补能益气，凉而不寒。" data-en="Changbai Mountain ginseng extract combined with imported dark chocolate, nourishing, energy supplement, cool but not cold.">长白山人参提取精华融合进口黑巧克力，温润养身，补能益气，凉而不寒。</p>
+                    <div class="product-price">¥78</div>
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
 
 <!-- STORY -->
@@ -455,27 +867,36 @@
                     <ellipse cx="66" cy="50" rx="12" ry="9" fill="rgba(255,255,255,0.25)"></ellipse>
                     <ellipse cx="66" cy="87" rx="12" ry="9" fill="rgba(255,255,255,0.18)"></ellipse>
                 </svg>
-                <div style="font-size:30px;letter-spacing:6px;margin-bottom:6px;">麦洛淇</div>
-                <div style="font-size:12px;letter-spacing:5px;opacity:0.65;">SINCE 2020 · BEIJING</div>
+                <div style="font-size:30px;letter-spacing:6px;margin-bottom:6px;" data-zh="麦洛淇" data-en="MYGELATO">麦洛淇</div>
+                <div style="font-size:12px;letter-spacing:5px;opacity:0.65;">SINCE 2015 · BEIJING</div>
             </div>
         </div>
         <div class="story-text fade-in">
             <span class="section-badge" style="text-align:left;" data-zh="OUR STORY · 品牌故事" data-en="OUR STORY · 品牌故事">OUR STORY · 品牌故事</span>
             <h2 data-zh="源于热爱&lt;br&gt;成于匠心" data-en="Born from Passion&lt;br&gt;Crafted with Care">源于热爱<br>成于匠心</h2>
-            <p data-zh="麦洛淇诞生于北京，由一群对美食充满热情的创业者共同创立。我们深信，最好的冰淇淋不仅仅是一种甜品——它是一种情感的表达，是对生活美好的追求。" data-en="Mygelato was born in Beijing, founded by a passionate team of food enthusiasts. We believe that great gelato is more than dessert — it's an expression of emotion, and a pursuit of life's finest moments.">麦洛淇诞生于北京，由一群对美食充满热情的创业者共同创立。我们深信，最好的冰淇淋不仅仅是一种甜品——它是一种情感的表达，是对生活美好的追求。</p>
-            <p data-zh="我们从全球精选最优质的原料，融合传统意式工艺与现代创新，打造出属于中国消费者的精致冰淇淋体验。每一款产品都经过严格品质把控，只为给您带来最完美的味觉享受。" data-en="We source the world's finest ingredients and combine traditional Italian gelato craftsmanship with modern innovation — creating a premium gelato experience for Chinese consumers. Every product undergoes rigorous quality control for the perfect sensory experience.">我们从全球精选最优质的原料，融合传统意式工艺与现代创新，打造出属于中国消费者的精致冰淇淋体验。每一款产品都经过严格品质把控，只为给您带来最完美的味觉享受。</p>
+            <!-- 替换后的品牌故事内容 -->
+            <p data-zh="麦洛淇食品科技成立于2015年，是聚焦高端健康食品生态的国家高新技术企业。
+公司以传承古法精髓，智创健康未来为使命，定位健康养生的科技派定制专家，深耕精准营养领域，拥有多项自主研发发明专利，以现代生物科技融合传统食疗智慧，致力于打造中国精准营养健康食品生态圈，引领“美味消费”向“健康投资”升级。" data-en="Founded in 2015, Mygelato Food Technology is a national high-tech enterprise focusing on the high-end healthy food ecosystem.
+With the mission of inheriting the essence of ancient craftsmanship and intelligently creating a healthy future, we position ourselves as a tech-savvy custom expert in health preservation. We deeply cultivate the field of precision nutrition, hold a number of independently developed invention patents, integrate modern biotechnology with traditional dietary therapy wisdom, and are committed to building China's precision nutrition and health food ecosystem, leading the upgrade from 'delicious consumption' to 'health investment'.">麦洛淇食品科技成立于2015年，是聚焦高端健康食品生态的国家高新技术企业。
+公司以传承古法精髓，智创健康未来为使命，定位健康养生的科技派定制专家，深耕精准营养领域，拥有多项自主研发发明专利，以现代生物科技融合传统食疗智慧，致力于打造中国精准营养健康食品生态圈，引领“美味消费”向“健康投资”升级。</p>
+            <p data-zh="旗下核心产品金丝奶萃冰淇淋，是古丝绸之路上的中华食养文化瑰宝，传承西域手工奶食古法技艺，坚守三0天然标准：零水基还原、零添加剂勾兑、零色素添加，原料天然天成。
+经36道手工工序、8小时微火慢熬，成就5.0高蛋白、低脂肪、低热量的卓越品质，奶香醇厚、口感绵滑，凉而不寒、温润养身，多食不伤脾胃，还能补钙补热能，全龄四季皆宜。" data-en="Our core product, Golden Silk Milk Extract Ice Cream, is a treasure of Chinese dietary health culture on the ancient Silk Road. It inherits the ancient craftsmanship of handmade dairy products in the Western Regions and adheres to the three-zero natural standards: zero water reduction, zero additive blending, and zero pigment addition, with all-natural raw materials.
+Through 36 manual processes and 8 hours of slow simmering over low heat, it achieves excellent quality with 5.0 high protein, low fat, and low calories. It has a rich milk flavor and a smooth texture, cool but not cold, nourishing the body. It does not harm the spleen and stomach even with frequent consumption, and can supplement calcium and energy, suitable for all ages and seasons.">旗下核心产品金丝奶萃冰淇淋，是古丝绸之路上的中华食养文化瑰宝，传承西域手工奶食古法技艺，坚守三0天然标准：零水基还原、零添加剂勾兑、零色素添加，原料天然天成。
+经36道手工工序、8小时微火慢熬，成就5.0高蛋白、低脂肪、低热量的卓越品质，奶香醇厚、口感绵滑，凉而不寒、温润养身，多食不伤脾胃，还能补钙补热能，全龄四季皆宜。</p>
+            <p data-zh="品牌深挖中华文化根基，创新推出四时清甜·24节气手作食养冰淇淋系列，顺时节、合地域、养身心，以科技与匠心重新定义中国食养冰品。" data-en="The brand deeply explores the roots of Chinese culture and innovatively launches the Four Seasons Sweet · 24 Solar Terms Handmade Dietary Health Ice Cream Series, which follows the seasons, adapts to regions, and nourishes the body and mind, redefining Chinese dietary health ice products with technology and craftsmanship.">品牌深挖中华文化根基，创新推出四时清甜·24节气手作食养冰淇淋系列，顺时节、合地域、养身心，以科技与匠心重新定义中国食养冰品。</p>
+            <p data-zh="未来，麦洛淇将以中国食养冰淇淋第一品牌为目标，以美食为纽带、以文化为内核，担当味觉文化软外交官，让中国味道走向世界，让中华食养文明影响全球。" data-en="In the future, Mygelato aims to become the number one brand of Chinese dietary health ice cream, taking food as a link and culture as the core, acting as a soft diplomat of taste culture, bringing Chinese flavors to the world and making Chinese dietary health civilization influence the globe.">未来，麦洛淇将以中国食养冰淇淋第一品牌为目标，以美食为纽带、以文化为内核，担当味觉文化软外交官，让中国味道走向世界，让中华食养文明影响全球。</p>
             <div class="story-stats">
                 <div class="stat-box">
-                    <span class="stat-num">30+</span>
-                    <span class="stat-lab" data-zh="精品口味" data-en="FLAVORS">精品口味</span>
+                    <span class="stat-num">2015</span>
+                    <span class="stat-lab" data-zh="成立年份" data-en="FOUNDED">成立年份</span>
                 </div>
                 <div class="stat-box">
-                    <span class="stat-num">100%</span>
-                    <span class="stat-lab" data-zh="天然原料" data-en="NATURAL">天然原料</span>
+                    <span class="stat-num">36道</span>
+                    <span class="stat-lab" data-zh="手工工序" data-en="PROCESS">手工工序</span>
                 </div>
                 <div class="stat-box">
-                    <span class="stat-num">5★</span>
-                    <span class="stat-lab" data-zh="品质保证" data-en="QUALITY">品质保证</span>
+                    <span class="stat-num">5.0</span>
+                    <span class="stat-lab" data-zh="高蛋白" data-en="PROTEIN">高蛋白</span>
                 </div>
             </div>
         </div>
@@ -487,7 +908,6 @@
     <div class="section-header fade-in">
         <span class="section-badge" data-zh="FLAVOR COLLECTION · 口味系列" data-en="FLAVOR COLLECTION · 口味系列">FLAVOR COLLECTION · 口味系列</span>
         <h2 class="section-title" data-zh="探索每一种滋味" data-en="Discover Every Flavor">探索每一种滋味</h2>
-        <div class="section-divider"></div>
         <p class="section-desc" data-zh="从经典传统到大胆创新，我们的每一种口味都是一场精彩的味觉冒险。" data-en="From timeless classics to bold innovations — every flavor is an adventure for your taste buds.">从经典传统到大胆创新，我们的每一种口味都是一场精彩的味觉冒险。</p>
     </div>
     <div class="flavors-grid" id="flavorsGrid"></div>
@@ -498,7 +918,6 @@
     <div class="section-header fade-in">
         <span class="section-badge" data-zh="CONTACT US · 联系我们" data-en="CONTACT US · 联系我们">CONTACT US · 联系我们</span>
         <h2 class="section-title" data-zh="与我们相连" data-en="Get In Touch">与我们相连</h2>
-        <div class="section-divider"></div>
     </div>
     <div class="contact-grid">
         <div class="contact-info fade-in">
@@ -544,7 +963,7 @@
                     <circle cx="196" cy="88" r="14" fill="#8B1A4A" opacity="0.9"></circle>
                     <circle cx="196" cy="88" r="6" fill="white"></circle>
                     <circle cx="196" cy="88" r="28" fill="#8B1A4A" opacity="0.12"></circle>
-                    <text x="196" y="120" text-anchor="middle" font-size="10" fill="#777" font-family="sans-serif">财富西环大厦</text>
+                    <text x="196" y="120" text-anchor="middle" font-size="10" fill="#777" font-family="sans-serif" data-zh="财富西环大厦" data-en="Fortune West Ring Tower">财富西环大厦</text>
                     <text x="196" y="133" text-anchor="middle" font-size="9" fill="#aaa" font-family="sans-serif">Fortune West Ring Tower</text>
                 </svg>
             </div>
@@ -582,7 +1001,7 @@
 <footer>
     <div class="footer-grid">
         <div class="footer-brand">
-            <h3>麦洛淇</h3>
+            <h3 data-zh="麦洛淇" data-en="MYGELATO">麦洛淇</h3>
             <p data-zh="MYGELATO · 意式精致冰淇淋" data-en="MYGELATO · Premium Italian Gelato">MYGELATO · 意式精致冰淇淋</p>
             <p style="margin-top:14px;" data-zh="北京麦洛淇食品科技有限公司&lt;br&gt;www.mygelato.cn" data-en="Beijing Mygelato Food Technology Co., Ltd.&lt;br&gt;www.mygelato.cn">北京麦洛淇食品科技有限公司<br>www.mygelato.cn</p>
             <p style="margin-top:14px;" data-zh="我们致力于为每位消费者带来最精致、最纯正的冰淇淋体验，让每一口都成为难忘的甜蜜记忆。" data-en="We are dedicated to delivering the finest, most authentic gelato experience — making every bite an unforgettable sweet memory.">我们致力于为每位消费者带来最精致、最纯正的冰淇淋体验，让每一口都成为难忘的甜蜜记忆。</p>
@@ -593,297 +1012,488 @@
                 <li><a href="#products" data-zh="经典系列" data-en="Classic Collection">经典系列</a></li>
                 <li><a href="#products" data-zh="季节限定" data-en="Seasonal Specials">季节限定</a></li>
                 <li><a onclick="openInfoModal('gift')" data-zh="礼品定制" data-en="Gift Customization">礼品定制</a></li>
-                <li><a href="#flavors" data-zh="全部口味" data-en="All Flavors">全部口味</a></li>
             </ul>
         </div>
-        <div class="footer-col">
-            <h4 data-zh="公司" data-en="COMPANY">公司</h4>
-            <ul>
-                <li><a href="#story" data-zh="品牌故事" data-en="Our Story">品牌故事</a></li>
-                <li><a onclick="openInfoModal('franchise')" data-zh="加盟合作" data-en="Franchise">加盟合作</a></li>
-                <li><a onclick="openInfoModal('careers')" data-zh="招贤纳士" data-en="Careers">招贤纳士</a></li>
-                <li><a href="#contact" data-zh="联系我们" data-en="Contact Us">联系我们</a></li>
-            </ul>
-        </div>
-        <div class="footer-col">
-            <h4 data-zh="服务" data-en="SERVICE">服务</h4>
-            <ul>
-                <li><a onclick="openInfoModal('delivery')" data-zh="外卖配送" data-en="Delivery">外卖配送</a></li>
-                <li><a onclick="openInfoModal('event')" data-zh="活动策划" data-en="Event Planning">活动策划</a></li>
-                <li><a onclick="openInfoModal('wholesale')" data-zh="企业采购" data-en="Wholesale">企业采购</a></li>
-                <li><a onclick="openInfoModal('gift')" data-zh="礼品服务" data-en="Gift Service">礼品服务</a></li>
-            </ul>
-        </div>
-    </div>
-    <div class="footer-bottom">
-        <p data-zh="© 2024 北京麦洛淇食品科技有限公司 · 保留所有权利" data-en="© 2024 Beijing Mygelato Food Technology Co., Ltd. · All Rights Reserved">© 2024 北京麦洛淇食品科技有限公司 · 保留所有权利</p>
-        <a href="http://www.mygelato.cn" target="_blank">www.mygelato.cn</a>
     </div>
 </footer>
 
-<!-- PRODUCT MODAL -->
-<div class="modal-overlay" id="prodModal" onclick="closeProdModal()">
-    <div class="modal-box" onclick="event.stopPropagation()">
-        <button class="modal-close" onclick="closeProdModal()">×</button>
-        <div id="prodModalBody"></div>
+<!-- 全屏图片查看弹窗 -->
+<div class="fullscreen-modal" id="fullscreenModal">
+    <button class="fullscreen-close" onclick="closeFullscreenModal()">&times;</button>
+    <img src="" alt="产品全屏图片" class="fullscreen-img" id="fullscreenImg">
+</div>
+
+<!-- 产品详情弹窗 - 新增 -->
+<div class="product-detail-modal" id="productDetailModal">
+    <button class="product-detail-close" onclick="closeProductDetail()">&times;</button>
+    <div class="product-detail-box" id="productDetailContent">
+        <!-- 产品详情内容将通过JS动态填充 -->
     </div>
 </div>
 
-<!-- INFO MODAL -->
-<div class="modal-overlay" id="infoModal" onclick="closeInfoModal()">
-    <div class="modal-box" onclick="event.stopPropagation()">
-        <button class="modal-close" onclick="closeInfoModal()">×</button>
-        <div id="infoModalBody"></div>
+<!-- 会员中心弹窗 -->
+<div class="member-modal" id="memberModal">
+    <div class="member-box">
+        <button class="member-close" onclick="closeMemberModal()">&times;</button>
+        <h3 class="member-title" data-zh="会员中心" data-en="Member Center">会员中心</h3>
+        
+        <div class="member-tabs">
+            <div class="member-tab active" onclick="switchMemberTab('login')" data-zh="登录" data-en="Login">登录</div>
+            <div class="member-tab" onclick="switchMemberTab('register')" data-zh="注册" data-en="Register">注册</div>
+        </div>
+
+        <!-- 登录表单 -->
+        <div class="member-form active" id="loginForm">
+            <div class="member-form-row">
+                <label data-zh="手机号码" data-en="Phone Number">手机号码</label>
+                <input type="tel" id="loginPhone" placeholder="请输入手机号码">
+            </div>
+            <div class="member-form-row">
+                <label data-zh="密码" data-en="Password">密码</label>
+                <input type="password" id="loginPwd" placeholder="请输入密码">
+            </div>
+            <button class="member-btn-submit" onclick="memberLogin()" data-zh="登录" data-en="Login">登录</button>
+            <div class="member-benefits">
+                <h4 data-zh="会员专享权益" data-en="Member Exclusive Benefits">会员专享权益</h4>
+                <ul>
+                    <li data-zh="新品优先体验" data-en="Priority experience of new products">新品优先体验</li>
+                    <li data-zh="专属定制服务" data-en="Exclusive customization services">专属定制服务</li>
+                    <li data-zh="生日特别礼遇" data-en="Special birthday gifts">生日特别礼遇</li>
+                    <li data-zh="积分兑换好礼" data-en="Points redemption for gifts">积分兑换好礼</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 注册表单 -->
+        <div class="member-form" id="registerForm">
+            <div class="member-form-row">
+                <label data-zh="手机号码" data-en="Phone Number">手机号码</label>
+                <input type="tel" id="regPhone" placeholder="请输入手机号码">
+            </div>
+            <div class="member-form-row">
+                <label data-zh="验证码" data-en="Verification Code">验证码</label>
+                <input type="text" id="regCode" placeholder="请输入验证码" style="width:65%; display: inline-block;">
+                <button class="btn-submit" style="width:32%; padding:12px; font-size:11px; margin-left:3%;" onclick="sendCode()" data-zh="获取验证码" data-en="Get Code">获取验证码</button>
+            </div>
+            <div class="member-form-row">
+                <label data-zh="设置密码" data-en="Set Password">设置密码</label>
+                <input type="password" id="regPwd" placeholder="请设置6-16位密码">
+            </div>
+            <div class="member-form-row">
+                <label data-zh="确认密码" data-en="Confirm Password">确认密码</label>
+                <input type="password" id="regPwdConfirm" placeholder="请再次输入密码">
+            </div>
+            <button class="member-btn-submit" onclick="memberRegister()" data-zh="注册" data-en="Register">注册</button>
+        </div>
     </div>
 </div>
-
-<div class="notif" id="notif"></div>
 
 <script>
-    // ─── DATA ───────────────────────────────────────────────────────────────────
-    const products = [
-        { id:'strawberry', bg:'linear-gradient(135deg,#FFE0E8,#FFB5C5)', scoop:'linear-gradient(135deg,#FF6B8A,#FF9EAD)', tag:{ zh:'经典必选', en:'CLASSIC' },
-          name:{ zh:'草莓恋曲', en:'Strawberry Serenade' }, price:'¥ 38',
-          desc:{ zh:'精选四川草莓，天然果泥调制，不含人工色素，入口即化，甜蜜香气令人难以忘怀。', en:'Crafted with Sichuan strawberry puree — no artificial colors, a melt-in-mouth sweetness you will never forget.' },
-          detail:{ zh:'净含量：100g | 规格：单个 | 保质期：12个月', en:'Net: 100g | Size: Single | Shelf life: 12 months' }
+    // 全局语言状态
+    let currentLang = 'zh';
+    
+    // 产品数据 - 优化：更新为完整的产品详情信息
+    const productData = {
+        'golden-silk': {
+            name: '金丝奶萃冰淇淋',
+            subTitle: '镇店经典款',
+            enName: 'Golden Silk Milk Extract Ice Cream',
+            enSubTitle: 'Signature Classic',
+            label: '经典',
+            enLabel: 'CLASSIC',
+            image: 'https://p11-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/c7871d24ac6144088ab7f99e5006780d.jpg~tplv-a9rns2rl98-24:720:720.jpg?lk3s=8e244e95&rcl=202603131015194944F9E0291DE35B51DF&rrcfp=8a172a1a&x-expires=1773972919&x-signature=Jq9MyYrSGuwJhUsRNmPOABw1hsw%3D',
+            sections: [
+                {
+                    title: '设计原理',
+                    content: '融合东方经典食养理念与现代低温锁鲜科技，甄选优质鲜牛乳搭配天然卵黄精华，以黄金配比匠心调配，铸就温润滋养、营养进阶的镇店级经典食养冰品，兼顾口感与营养双重核心价值。'
+                },
+                {
+                    title: '营养结构',
+                    content: '打造牛乳与卵黄双优营养基底，富含优质乳蛋白、软磷脂、叶黄素及维生素A等营养成分，无冗余添加，营养密度高，温和易吸收，筑牢纯粹营养根基。'
+                },
+                {
+                    title: '食养功能',
+                    content: '依托卵黄中的叶黄素与维生素A，发挥护眼明目功效，有效缓解用眼疲劳；产品凉而不寒，温润亲和肠胃，补充身体所需营养，全年龄段均可安心享用。'
+                },
+                {
+                    title: '口感味道',
+                    content: '醇厚奶香交织柔润蛋香，口感绵密紧实、丝滑无冰渣，甜度适中不腻口，入口尽显浓郁醇厚，回味绵长，尽显经典奶味冰品的极致质感。'
+                }
+            ]
         },
-        { id:'chocolate', bg:'linear-gradient(135deg,#F5E6D0,#D4A27A)', scoop:'linear-gradient(135deg,#3E1508,#7B3F15)', tag:{ zh:'招牌爆款', en:'BESTSELLER' },
-          name:{ zh:'黑巧深情', en:'Dark Chocolate Passion' }, price:'¥ 42',
-          desc:{ zh:'精选70%比利时顶级黑巧克力，层次深邃，口感醇厚，每一口都是对巧克力的深情告白。', en:'70% premium Belgian dark chocolate — deep, rich and layered. A passionate ode to chocolate in every spoonful.' },
-          detail:{ zh:'净含量：100g | 规格：单个 | 保质期：12个月', en:'Net: 100g | Size: Single | Shelf life: 12 months' }
+        'lychee-collagen': {
+            name: '荔枝多酚胶原蛋白冰淇淋',
+            subTitle: '招牌颜值流量款',
+            enName: 'Lychee Polyphenol Collagen Ice Cream',
+            enSubTitle: 'Signature Beauty & Popularity',
+            label: '养颜',
+            enLabel: 'BEAUTY',
+            image: 'https://p3-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/5af65057014d46ab9757fd648b50ec5d.jpg~tplv-a9rns2rl98-24:720:720.jpg?lk3s=8e244e95&rcl=202603131015194944F9E0291DE35B51DF&rrcfp=8a172a1a&x-expires=1773972919&x-signature=%2BzWgQh3DtPvy%2Fr1k57bOxIru%2FSA%3D',
+            sections: [
+                {
+                    title: '设计原理',
+                    content: '甄选新鲜荔枝原汁，萃取天然荔枝多酚活性成分，搭配低温锁鲜科技，保留鲜果营养与清香，打造抗氧化、轻养肤、高鲜度的果味食养冰品。'
+                },
+                {
+                    title: '营养结构',
+                    content: '富含荔枝多酚、天然维生素与氨基酸，搭配高蛋白牛乳基底，低脂低糖，轻负担高营养，果香与奶香完美融合。'
+                },
+                {
+                    title: '食养功能',
+                    content: '荔枝多酚助力抗氧化、焕亮肌肤；温和滋养、清甜润养，舒缓身心，适合爱美、追求轻盈状态的人群。'
+                },
+                {
+                    title: '口感味道',
+                    content: '荔枝鲜果清香浓郁，奶香清甜柔和，口感绵密清爽，果香突出，鲜甜不腻，颜值与口感双在线。'
+                }
+            ]
         },
-        { id:'matcha', bg:'linear-gradient(135deg,#E8F5E0,#B5D5A0)', scoop:'linear-gradient(135deg,#2E6A26,#5FA850)', tag:{ zh:'东方臻选', en:'ORIENTAL' },
-          name:{ zh:'抹茶雅韵', en:'Matcha Elegance' }, price:'¥ 45',
-          desc:{ zh:'甄选日本宇治特级抹茶，清雅回甘，意式工艺与东方茶韵的完美融合，茶香悠远绵长。', en:'Premium Japanese Uji matcha — elegant bitterness and lasting aroma, a perfect fusion of Italian craft and Eastern tea culture.' },
-          detail:{ zh:'净含量：100g | 规格：单个 | 保质期：12个月', en:'Net: 100g | Size: Single | Shelf life: 12 months' }
+        'pandan-coconut': {
+            name: '斑斓椰香冰淇淋',
+            subTitle: '纤体强需求款',
+            enName: 'Pandan Coconut Ice Cream',
+            enSubTitle: 'Body Slimming Focus',
+            label: '限定',
+            enLabel: 'LIMITED',
+            image: 'https://p11-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/9ddf3a01cae841b089dfb7f464751f17.jpg~tplv-a9rns2rl98-24:720:720.jpg?lk3s=8e244e95&rcl=202603131015194944F9E0291DE35B51DF&rrcfp=8a172a1a&x-expires=1773972919&x-signature=WTik3FYrco1U1Bl7Owgs9eb%2BkTc%3D',
+            sections: [
+                {
+                    title: '设计原理',
+                    content: '依托轻食养科技，复配斑斓叶精华、靶向代谢益生菌与白芸豆提取物，低温锁活营养，打造控糖减脂、护肠促吸收的功能性食养冰品。'
+                },
+                {
+                    title: '营养结构',
+                    content: '高蛋白乳基底，搭配斑斓营养、益生菌与白芸豆提取物，低脂低糖，助力蛋白高效吸收与脂肪燃烧。'
+                },
+                {
+                    title: '食养功能',
+                    content: '斑斓叶清热润燥、调理身心；白芸豆阻断淀粉、辅助控糖减脂；益生菌护肠促吸收，减脂养身双效合一。'
+                },
+                {
+                    title: '口感味道',
+                    content: '斑斓清新搭配茉莉幽香，奶香绵密丝滑，清甜淡雅不腻口，风味独特余韵悠长。'
+                }
+            ]
         },
-        { id:'vanilla', bg:'linear-gradient(135deg,#FFF8DC,#FFE890)', scoop:'linear-gradient(135deg,#EDD96A,#D4B840)', tag:{ zh:'经典之选', en:'CLASSIC' },
-          name:{ zh:'香草云朵', en:'Vanilla Cloud' }, price:'¥ 36',
-          desc:{ zh:'马达加斯加天然香草荚精萃，奶香馥郁，口感绵密如云，经典永不过时。', en:'Madagascar vanilla bean extract — milky, cloud-soft and timeless. The classic that never goes out of style.' },
-          detail:{ zh:'净含量：100g | 规格：单个 | 保质期：12个月', en:'Net: 100g | Size: Single | Shelf life: 12 months' }
-        },
-        { id:'mango', bg:'linear-gradient(135deg,#FFF3CC,#FFD166)', scoop:'linear-gradient(135deg,#FF8C00,#FFB732)', tag:{ zh:'热带风情', en:'TROPICAL' },
-          name:{ zh:'芒果探戈', en:'Mango Tango' }, price:'¥ 40',
-          desc:{ zh:'采用新鲜泰国金枕芒果制作，果肉饱满，热带风情浓烈，每一口都是阳光海岸的馈赠。', en:'Fresh Thai Musang King mango — plump, tropical and sunshine-kissed. Paradise in every bite.' },
-          detail:{ zh:'净含量：100g | 规格：单个 | 保质期：12个月', en:'Net: 100g | Size: Single | Shelf life: 12 months' }
-        },
-        { id:'berry', bg:'linear-gradient(135deg,#EDE0F8,#C898E0)', scoop:'linear-gradient(135deg,#5E1E90,#9B59B6)', tag:{ zh:'莓果狂欢', en:'BERRY BURST' },
-          name:{ zh:'莓果狂想', en:'Berry Rhapsody' }, price:'¥ 44',
-          desc:{ zh:'精选蓝莓、覆盆子与黑莓三重融合，酸甜交织，富含花青素，美味与健康并驾齐驱。', en:'Blueberry, raspberry and blackberry in perfect harmony — a sweet-tart symphony rich in antioxidants.' },
-          detail:{ zh:'净含量：100g | 规格：单个 | 保质期：12个月', en:'Net: 100g | Size: Single | Shelf life: 12 months' }
-        }
-    ];
-
-    const flavors = [
-        { color:'linear-gradient(135deg,#FF6B8A,#FFB0C0)', zh:'草莓', en:'Strawberry', sub:'STRAWBERRY' },
-        { color:'linear-gradient(135deg,#3E1508,#7B3F15)', zh:'黑巧克力', en:'Dark Chocolate', sub:'DARK CHOCOLATE' },
-        { color:'linear-gradient(135deg,#2E6A26,#5FA850)', zh:'抹茶', en:'Matcha', sub:'MATCHA' },
-        { color:'linear-gradient(135deg,#EDD96A,#D4B840)', zh:'香草', en:'Vanilla', sub:'VANILLA' },
-        { color:'linear-gradient(135deg,#FF8C00,#FFB732)', zh:'芒果', en:'Mango', sub:'MANGO' },
-        { color:'linear-gradient(135deg,#5E1E90,#9B59B6)', zh:'混合莓果', en:'Mixed Berry', sub:'MIXED BERRY' },
-        { color:'linear-gradient(135deg,#5C4033,#8B6347)', zh:'咖啡榛果', en:'Coffee Hazelnut', sub:'COFFEE HAZELNUT' },
-        { color:'linear-gradient(135deg,#3A82C4,#7BB8E8)', zh:'蓝莓酸奶', en:'Blueberry Yogurt', sub:'BLUEBERRY YOGURT' },
-        { color:'linear-gradient(135deg,#C0392B,#E74C3C)', zh:'荔枝玫瑰', en:'Lychee Rose', sub:'LYCHEE ROSE' },
-        { color:'linear-gradient(135deg,#F39C12,#E67E22)', zh:'柠檬挚爱', en:'Lemon Lover', sub:'LEMON LOVER' },
-        { color:'linear-gradient(135deg,#16A085,#48C9B0)', zh:'薄荷巧克力', en:'Mint Choco', sub:'MINT CHOCOLATE' },
-        { color:'linear-gradient(135deg,#8E44AD,#D7BDE2)', zh:'紫芋奶香', en:'Taro Milk', sub:'TARO MILK' },
-    ];
-
-    const infoData = {
-        franchise:{
-            zh:{ title:'加盟合作', body:'欢迎加入麦洛淇大家庭！我们提供全面的加盟支持体系：<br><br>✦ 品牌授权与视觉输出<br>✦ 核心原料统一供应<br>✦ 系统化技术培训<br>✦ 全程营销与运营支持<br>✦ 选址与装修设计指导<br><br>如有合作意向，欢迎致电洽谈：<br>📞 杨 &nbsp;178-1209-8632<br>📞 王 &nbsp;137-1621-7716' },
-            en:{ title:'Franchise', body:'Welcome to the Mygelato family! We offer a comprehensive franchise support system:<br><br>✦ Brand licensing & visual guidelines<br>✦ Centralized ingredient supply<br>✦ Systematic technical training<br>✦ Full marketing & operations support<br>✦ Site selection & interior design guidance<br><br>For inquiries, please call us:<br>📞 Yang &nbsp;178-1209-8632<br>📞 Wang &nbsp;137-1621-7716' }
-        },
-        careers:{
-            zh:{ title:'招贤纳士', body:'麦洛淇正在寻找充满激情、热爱美食的优秀伙伴！我们提供有竞争力的薪酬待遇、完善的晋升通道和充满活力的工作环境。<br><br>当前招聘岗位：<br>✦ 冰淇淋研发工程师<br>✦ 品牌市场专员<br>✦ 门店运营管理<br>✦ 新媒体运营<br>✦ 销售拓展专员<br><br>简历请发送至：<br>📧 hr@mygelato.cn' },
-            en:{ title:'Careers', body:"Mygelato is looking for passionate food lovers to join our team! We offer competitive compensation, clear career paths, and a vibrant work culture.<br><br>Current openings:<br>✦ Gelato R&D Engineer<br>✦ Brand Marketing Specialist<br>✦ Store Operations Manager<br>✦ Social Media Manager<br>✦ Sales Development Executive<br><br>Send your resume to:<br>📧 hr@mygelato.cn" }
-        },
-        delivery:{
-            zh:{ title:'外卖配送', body:'麦洛淇支持同城外卖配送服务，覆盖北京市内主要区域。<br><br>✦ 配送平台：美团外卖、饿了么<br>✦ 配送时间：每日 10:00 – 21:30<br>✦ 起送金额：¥ 50<br>✦ 配送费：¥ 5 起<br><br>为确保冰淇淋品质，我们采用专业冷链保温包装，确保完美送达您的手中。' },
-            en:{ title:'Delivery Service', body:'Mygelato offers same-city delivery covering major areas of Beijing.<br><br>✦ Platforms: Meituan, Eleme<br>✦ Hours: Daily 10:00 – 21:30<br>✦ Min. order: ¥ 50<br>✦ Delivery fee: from ¥ 5<br><br>We use professional cold-chain insulated packaging to ensure your gelato arrives in perfect condition.' }
-        },
-        gift:{
-            zh:{ title:'礼品定制', body:'让麦洛淇为您的特殊时刻打造专属礼品！<br><br>✦ 定制冰淇淋礼盒<br>✦ 企业礼品批量定制<br>✦ 节日特别礼包<br>✦ 个性化包装设计<br>✦ 品牌LOGO定制<br><br>📦 起订量：10盒起<br>⏰ 提前预约：3个工作日<br><br>联系我们获取报价：<br>📞 杨 &nbsp;178-1209-8632' },
-            en:{ title:'Gift Customization', body:'Let Mygelato create a personalized gift for your special moments!<br><br>✦ Custom gelato gift boxes<br>✦ Corporate bulk gift solutions<br>✦ Holiday special packages<br>✦ Personalized packaging design<br>✦ Brand logo customization<br><br>📦 Min. order: 10 boxes<br>⏰ Lead time: 3 business days<br><br>Contact us for a quote:<br>📞 Yang &nbsp;178-1209-8632' }
-        },
-        event:{
-            zh:{ title:'活动策划', body:'让麦洛淇的甜蜜点亮您的每一个特别时刻！<br><br>✦ 企业团建冰淇淋DIY工坊<br>✦ 婚礼甜品台打造<br>✦ 生日派对定制服务<br>✦ 商业活动冰淇淋展台<br>✦ 学校亲子互动活动<br>✦ 节日嘉年华<br><br>⏰ 请提前7天预约<br>📞 联系我们获取专属方案！' },
-            en:{ title:'Event Planning', body:"Let Mygelato sweeten every special moment!<br><br>✦ Corporate team-building gelato DIY workshops<br>✦ Wedding dessert table setups<br>✦ Birthday party customization<br>✦ Commercial event gelato stations<br>✦ School family activity programs<br>✦ Holiday carnivals<br><br>⏰ Please book at least 7 days in advance<br>📞 Contact us for a tailored proposal!" }
-        },
-        wholesale:{
-            zh:{ title:'企业采购', body:'欢迎企业客户批量采购！<br><br>✦ 批量优惠（满50盒享九折）<br>✦ 支持定制包装与品牌植入<br>✦ 专属客服全程跟进<br>✦ 灵活配送方案<br>✦ 发票开具支持<br><br>适用场景：企业员工福利、年会礼品、节日慰问、商务接待<br><br>联系销售团队：<br>📞 杨 &nbsp;178-1209-8632<br>📞 王 &nbsp;137-1621-7716' },
-            en:{ title:'Wholesale / B2B', body:'Welcome, enterprise clients!<br><br>✦ Bulk discounts (10% off for 50+ boxes)<br>✦ Custom packaging & brand co-branding<br>✦ Dedicated account manager<br>✦ Flexible delivery options<br>✦ Official invoice support<br><br>Ideal for: Employee benefits, year-end gifts, holiday greetings, business entertaining<br><br>Contact our sales team:<br>📞 Yang &nbsp;178-1209-8632<br>📞 Wang &nbsp;137-1621-7716' }
+        'ginseng-chocolate': {
+            name: '人参萃巧冰淇淋',
+            subTitle: '元气能量款',
+            enName: 'Ginseng Extract Chocolate Ice Cream',
+            enSubTitle: 'Energy Boost',
+            label: '养生',
+            enLabel: 'HEALTH',
+            image: 'https://p26-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/859b872078e048c4bcd0c6ded3cb4446.jpg~tplv-a9rns2rl98-24:720:720.jpg?lk3s=8e244e95&rcl=202603131015194944F9E0291DE35B51DF&rrcfp=8a172a1a&x-expires=1773972919&x-signature=DkmSal6SwS2b%2FDARZHZ9M3ZE%2BGk%3D',
+            sections: [
+                {
+                    title: '设计原理',
+                    content: '融合东方食养与现代营养科技，萃取人参活性精华，搭配黑巧克力与咖啡因子，低温锁活，打造补气提神、高能补给的功能型冰品。'
+                },
+                {
+                    title: '营养结构',
+                    content: '高蛋白牛乳基底，富含人参提取物、黑巧抗氧化成分与咖啡提神因子，高能量、高营养密度，轻负担强补给。'
+                },
+                {
+                    title: '食养功能',
+                    content: '人参补气养身、缓解疲劳；黑巧与咖啡协同提神醒脑，快速恢复体能，让人精力充沛、轻补不燥。'
+                },
+                {
+                    title: '口感味道',
+                    content: '巧克力脆香与绵密奶香交融，咖啡醇厚回甘，微甘人参尾韵悠长，层次丰富，醇厚不腻。'
+                }
+            ]
         }
     };
+    
+    // 全屏图片查看功能
+    function openFullscreenModal(imgUrl, altText) {
+        const modal = document.getElementById('fullscreenModal');
+        const img = document.getElementById('fullscreenImg');
+        img.src = imgUrl;
+        img.alt = altText;
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
 
-    // ─── LANGUAGE ────────────────────────────────────────────────────────────────
-    let lang = 'zh';
+    function closeFullscreenModal() {
+        const modal = document.getElementById('fullscreenModal');
+        modal.classList.remove('open');
+        document.body.style.overflow = '';
+    }
 
+    // 点击全屏弹窗外部关闭
+    document.getElementById('fullscreenModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeFullscreenModal();
+        }
+    });
+
+    // 产品详情弹窗功能 - 优化：使用新的产品数据结构
+    function openProductDetail(productId) {
+        const product = productData[productId];
+        if (!product) return;
+        
+        const modal = document.getElementById('productDetailModal');
+        const content = document.getElementById('productDetailContent');
+        
+        // 构建产品详情HTML - 适配新布局
+        const sectionsHtml = product.sections.map(section => `
+            <div class="product-detail-section">
+                <div class="product-detail-section-title">${section.title}</div>
+                <div class="product-detail-section-content">${section.content}</div>
+            </div>
+        `).join('');
+        
+        content.innerHTML = `
+            <div class="product-detail-img">
+                <img src="${product.image}" alt="${product.name}" 
+                     onclick="openFullscreenModal('${product.image}', '${product.name}')">
+            </div>
+            <div class="product-detail-content">
+                <div class="product-detail-header">
+                    <span class="product-detail-label">${product.label}</span>
+                    <h2 class="product-detail-name">${product.name}</h2>
+                    <div class="product-detail-en">${product.subTitle}</div>
+                    <div class="product-detail-divider"></div>
+                </div>
+                ${sectionsHtml}
+            </div>
+        `;
+        
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeProductDetail() {
+        const modal = document.getElementById('productDetailModal');
+        modal.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    // 点击产品详情弹窗外部关闭
+    document.getElementById('productDetailModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeProductDetail();
+        }
+    });
+
+    // 会员中心功能
+    function openMemberModal() {
+        const modal = document.getElementById('memberModal');
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeMemberModal() {
+        const modal = document.getElementById('memberModal');
+        modal.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    function switchMemberTab(tabName) {
+        // 切换标签样式
+        const tabs = document.querySelectorAll('.member-tab');
+        tabs.forEach(tab => tab.classList.remove('active'));
+        event.target.classList.add('active');
+        
+        // 切换表单显示
+        const forms = document.querySelectorAll('.member-form');
+        forms.forEach(form => form.classList.remove('active'));
+        document.getElementById(tabName + 'Form').classList.add('active');
+    }
+
+    // 发送验证码
+    function sendCode() {
+        const phone = document.getElementById('regPhone').value;
+        if (!phone || phone.length !== 11) {
+            showNotification('请输入有效的11位手机号码');
+            return;
+        }
+        
+        // 模拟发送验证码
+        showNotification('验证码已发送至您的手机');
+        const btn = event.target;
+        btn.disabled = true;
+        let count = 60;
+        btn.innerHTML = currentLang === 'zh' ? `${count}秒后重新获取` : `Resend in ${count}s`;
+        
+        const timer = setInterval(() => {
+            count--;
+            btn.innerHTML = currentLang === 'zh' ? `${count}秒后重新获取` : `Resend in ${count}s`;
+            if (count <= 0) {
+                clearInterval(timer);
+                btn.disabled = false;
+                btn.innerHTML = currentLang === 'zh' ? '获取验证码' : 'Get Code';
+            }
+        }, 1000);
+    }
+
+    // 会员登录
+    function memberLogin() {
+        const phone = document.getElementById('loginPhone').value;
+        const pwd = document.getElementById('loginPwd').value;
+        
+        if (!phone || !pwd) {
+            showNotification(currentLang === 'zh' ? '请填写完整的登录信息' : 'Please fill in complete login information');
+            return;
+        }
+        
+        // 模拟登录成功
+        showNotification(currentLang === 'zh' ? '登录成功！欢迎回来' : 'Login successful! Welcome back');
+        closeMemberModal();
+        
+        // 存储登录状态
+        localStorage.setItem('memberLogin', 'true');
+        localStorage.setItem('memberPhone', phone);
+    }
+
+    // 会员注册
+    function memberRegister() {
+        const phone = document.getElementById('regPhone').value;
+        const code = document.getElementById('regCode').value;
+        const pwd = document.getElementById('regPwd').value;
+        const pwdConfirm = document.getElementById('regPwdConfirm').value;
+        
+        // 简单验证
+        if (!phone || phone.length !== 11) {
+            showNotification(currentLang === 'zh' ? '请输入有效的11位手机号码' : 'Please enter a valid 11-digit phone number');
+            return;
+        }
+        if (!code) {
+            showNotification(currentLang === 'zh' ? '请输入验证码' : 'Please enter verification code');
+            return;
+        }
+        if (!pwd || pwd.length < 6) {
+            showNotification(currentLang === 'zh' ? '密码长度需至少6位' : 'Password must be at least 6 characters');
+            return;
+        }
+        if (pwd !== pwdConfirm) {
+            showNotification(currentLang === 'zh' ? '两次输入的密码不一致' : 'Passwords do not match');
+            return;
+        }
+        
+        // 模拟注册成功
+        showNotification(currentLang === 'zh' ? '注册成功！请登录' : 'Registration successful! Please login');
+        switchMemberTab('login');
+        
+        // 清空注册表单
+        document.getElementById('regPhone').value = '';
+        document.getElementById('regCode').value = '';
+        document.getElementById('regPwd').value = '';
+        document.getElementById('regPwdConfirm').value = '';
+    }
+
+    // 语言切换功能
     function toggleLang() {
-        lang = lang === 'zh' ? 'en' : 'zh';
-        document.getElementById('langBtn').textContent = lang === 'zh' ? 'EN' : '中文';
-        document.documentElement.lang = lang;
-        // standard data-zh / data-en elements
-        document.querySelectorAll('[data-zh]').forEach(el => {
-            const val = el.getAttribute('data-' + lang);
-            if (!val) return;
-            if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-                el.placeholder = val;
+        currentLang = currentLang === 'zh' ? 'en' : 'zh';
+        
+        // 更新语言按钮文本
+        const langBtn = document.getElementById('langBtn');
+        langBtn.textContent = currentLang === 'zh' ? 'EN' : '中文';
+        
+        // 更新所有带语言标记的元素
+        const langElements = document.querySelectorAll('[data-zh]');
+        langElements.forEach(el => {
+            // 处理不同类型的元素
+            if (el.tagName === 'INPUT' && el.hasAttribute('data-placeholder-zh')) {
+                el.placeholder = el.getAttribute(`data-placeholder-${currentLang}`);
+            } else if (el.tagName === 'OPTION') {
+                el.textContent = el.getAttribute(`data-${currentLang}`);
             } else {
-                el.innerHTML = val;
+                el.textContent = el.getAttribute(`data-${currentLang}`);
             }
         });
-        // placeholder fallback
-        document.querySelectorAll('[data-placeholder-zh]').forEach(el => {
-            el.placeholder = el.getAttribute('data-placeholder-' + lang) || '';
-        });
-        // select options
-        document.querySelectorAll('select option').forEach(opt => {
-            const v = opt.getAttribute('data-' + lang);
-            if (v) opt.textContent = v;
-        });
-        // re-render dynamic product cards
-        renderProducts();
-        renderFlavors();
+        
+        // 更新页面标题
+        document.title = currentLang === 'zh' ? '麦洛淇 MYGELATO · 精致冰淇淋' : 'MYGELATO · Premium Italian Gelato';
     }
 
-    // ─── RENDER PRODUCTS ────────────────────────────────────────────────────────
-    function renderProducts() {
-        const grid = document.getElementById('productsGrid');
-        grid.innerHTML = products.map(p => `
-            <div class="product-card fade-in" onclick="openProdModal('${p.id}')">
-                <div class="product-img" style="background:${p.bg};">
-                    <div class="ice-wrap">
-                        <div class="scoop" style="background:${p.scoop};"></div>
-                        <div class="cone-wrap">
-                            <svg class="cone-svg" viewBox="0 0 88 88" xmlns="http://www.w3.org/2000/svg">
-                                <polygon points="2,2 86,2 44,86" fill="#D4A27A"/>
-                                <polygon points="2,2 86,2 44,86" fill="url(#conePattern)" opacity="0.3"/>
-                                <line x1="2" y1="2" x2="44" y2="86" stroke="rgba(0,0,0,0.08)" stroke-width="0.8"/>
-                                <line x1="86" y1="2" x2="44" y2="86" stroke="rgba(0,0,0,0.08)" stroke-width="0.8"/>
-                                <line x1="20" y1="2" x2="44" y2="86" stroke="rgba(0,0,0,0.05)" stroke-width="0.5"/>
-                                <line x1="44" y1="2" x2="44" y2="86" stroke="rgba(0,0,0,0.05)" stroke-width="0.5"/>
-                                <line x1="68" y1="2" x2="44" y2="86" stroke="rgba(0,0,0,0.05)" stroke-width="0.5"/>
-                                <line x1="2" y1="20" x2="86" y2="20" stroke="rgba(0,0,0,0.05)" stroke-width="0.5"/>
-                                <line x1="2" y1="40" x2="86" y2="40" stroke="rgba(0,0,0,0.05)" stroke-width="0.5"/>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-                <div class="product-info">
-                    <div class="product-label">${p.tag[lang]}</div>
-                    <h3 class="product-name">${p.name[lang]}</h3>
-                    <p class="product-desc">${p.desc[lang]}</p>
-                    <div class="product-price">${p.price}</div>
-                </div>
-            </div>
-        `).join('');
-        // re-observe
-        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+    // 基础交互函数
+    function toggleMenu() {
+        const hbg = document.getElementById('hbg');
+        const navLinks = document.getElementById('navLinks');
+        hbg.classList.toggle('open');
+        navLinks.classList.toggle('open');
     }
-
-    // ─── RENDER FLAVORS ─────────────────────────────────────────────────────────
-    function renderFlavors() {
-        const grid = document.getElementById('flavorsGrid');
-        grid.innerHTML = flavors.map(f => `
-            <div class="flavor-card fade-in">
-                <div class="flavor-ball" style="background:${f.color};"></div>
-                <div class="flavor-name">${f[lang]}</div>
-                <div class="flavor-sub">${f.sub}</div>
-            </div>
-        `).join('');
-        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+    
+    function closeMenu() {
+        document.getElementById('hbg').classList.remove('open');
+        document.getElementById('navLinks').classList.remove('open');
     }
-
-    // ─── PRODUCT MODAL ───────────────────────────────────────────────────────────
-    function openProdModal(id) {
-        const p = products.find(x => x.id === id);
-        if (!p) return;
-        document.getElementById('prodModalBody').innerHTML = `
-            <div style="text-align:center;margin-bottom:20px;">
-                <div style="width:90px;height:90px;border-radius:50%;background:${p.scoop};margin:0 auto 16px;box-shadow:0 6px 22px rgba(0,0,0,0.18);"></div>
-                <h3>${p.name[lang]}</h3>
-                <div class="modal-price">${p.price}</div>
-            </div>
-            <p style="margin-bottom:12px;">${p.desc[lang]}</p>
-            <p style="color:#bbb;font-size:13px;">${p.detail[lang]}</p>
-            <button class="modal-buy" onclick="closeProdModal();showNotif('${lang==='zh'?'✓ 已加入购物车！':'✓ Added to cart!'}')">${lang==='zh'?'立即选购':'Buy Now'}</button>
-        `;
-        document.getElementById('prodModal').classList.add('open');
-    }
-    function closeProdModal() { document.getElementById('prodModal').classList.remove('open'); }
-
-    // ─── INFO MODAL ──────────────────────────────────────────────────────────────
-    function openInfoModal(key) {
-        const d = infoData[key][lang];
-        document.getElementById('infoModalBody').innerHTML = `
-            <h3>${d.title}</h3>
-            <p style="margin-top:12px;">${d.body}</p>
-        `;
-        document.getElementById('infoModal').classList.add('open');
-    }
-    function closeInfoModal() { document.getElementById('infoModal').classList.remove('open'); }
-
-    // ─── FORM ────────────────────────────────────────────────────────────────────
+    
     function submitForm() {
-        const name = document.getElementById('fName').value.trim();
-        const phone = document.getElementById('fPhone').value.trim();
-        if (!name) { showNotif(lang==='zh'?'请输入您的姓名':'Please enter your name'); return; }
-        if (!phone) { showNotif(lang==='zh'?'请输入联系电话':'Please enter your phone number'); return; }
+        const name = document.getElementById('fName').value;
+        const phone = document.getElementById('fPhone').value;
+        const msg = document.getElementById('fMsg').value;
+        
+        if (!name || !phone || !msg) {
+            showNotification(currentLang === 'zh' ? '请填写完整的留言信息' : 'Please fill in complete message information');
+            return;
+        }
+        
+        showNotification(currentLang === 'zh' ? '留言提交成功！我们会尽快与您联系。' : 'Message submitted successfully! We will contact you soon.');
+        
+        // 清空表单
         document.getElementById('fName').value = '';
         document.getElementById('fPhone').value = '';
         document.getElementById('fMsg').value = '';
-        showNotif(lang==='zh'?'✓ 留言已提交，我们将尽快联系您！':'✓ Message sent! We will contact you soon!');
+    }
+    
+    function openInfoModal(type) {
+        showNotification(currentLang === 'zh' ? '礼品定制功能即将上线，敬请期待！' : 'Gift customization function is coming soon!');
     }
 
-    // ─── NOTIFICATION ────────────────────────────────────────────────────────────
-    function showNotif(msg) {
-        const el = document.getElementById('notif');
-        el.textContent = msg;
-        el.classList.add('show');
-        setTimeout(() => el.classList.remove('show'), 3200);
+    // 通知提示
+    function showNotification(message) {
+        const notif = document.createElement('div');
+        notif.className = 'notif';
+        notif.textContent = message;
+        document.body.appendChild(notif);
+        
+        // 显示通知
+        setTimeout(() => {
+            notif.classList.add('show');
+        }, 10);
+        
+        // 3秒后隐藏并移除
+        setTimeout(() => {
+            notif.classList.remove('show');
+            setTimeout(() => {
+                document.body.removeChild(notif);
+            }, 350);
+        }, 3000);
     }
 
-    // ─── MOBILE MENU ─────────────────────────────────────────────────────────────
-    function toggleMenu() {
-        document.getElementById('navLinks').classList.toggle('open');
-        document.getElementById('hbg').classList.toggle('open');
-    }
-    function closeMenu() {
-        document.getElementById('navLinks').classList.remove('open');
-        document.getElementById('hbg').classList.remove('open');
-    }
-    document.addEventListener('click', e => {
-        const nav = document.getElementById('navLinks');
-        const hbg = document.getElementById('hbg');
-        if (nav.classList.contains('open') && !nav.contains(e.target) && !hbg.contains(e.target)) closeMenu();
+    // 滚动动画
+    window.addEventListener('scroll', function() {
+        const fadeElements = document.querySelectorAll('.fade-in');
+        fadeElements.forEach(el => {
+            const rect = el.getBoundingClientRect();
+            if (rect.top < window.innerHeight - 100) {
+                el.classList.add('visible');
+            }
+        });
+
+        // 进度条
+        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrolled = (winScroll / height) * 100;
+        document.getElementById("progressBar").style.width = scrolled + "%";
     });
 
-    // ─── SCROLL EFFECTS ──────────────────────────────────────────────────────────
-    const observer = new IntersectionObserver(entries => {
-        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-    }, { threshold: 0.08 });
-
-    window.addEventListener('scroll', () => {
-        const pct = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight) * 100;
-        document.getElementById('progressBar').style.width = pct + '%';
+    // 页面加载完成初始化
+    window.addEventListener('load', function() {
+        // 触发滚动动画初始化
+        window.dispatchEvent(new Event('scroll'));
+        
+        // 检查会员登录状态
+        if (localStorage.getItem('memberLogin') === 'true') {
+            const memberBtn = document.getElementById('memberBtn');
+            const phone = localStorage.getItem('memberPhone');
+            // 隐藏中间4位手机号
+            const maskedPhone = phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2');
+            memberBtn.innerHTML = `<span data-zh="欢迎 ${maskedPhone}" data-en="Welcome ${maskedPhone}">欢迎 ${maskedPhone}</span>`;
+        }
     });
-
-    // ─── SMOOTH SCROLL ───────────────────────────────────────────────────────────
-    document.addEventListener('click', e => {
-        const link = e.target.closest('a[href^="#"]');
-        if (!link) return;
-        const href = link.getAttribute('href');
-        if (href === '#' || href === '#!') return;
-        const target = document.querySelector(href);
-        if (target) { e.preventDefault(); target.scrollIntoView({ behavior:'smooth', block:'start' }); }
-    });
-
-    // ─── INIT ────────────────────────────────────────────────────────────────────
-    renderProducts();
-    renderFlavors();
-    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 </script>
-
-
-</body></html>
+</body>
+</html>
